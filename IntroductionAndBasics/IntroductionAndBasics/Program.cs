@@ -1,9 +1,9 @@
-﻿public class Program
+﻿namespace IntroductionAndBasics;
+public class Program
 {
     public static void Main()
-    {        
-        Console.WriteLine(Operation.Counter);
-        Console.WriteLine(Operation.Add(5, 10));
+    {
+        Exercise3();
     }
 
     #region OOP
@@ -29,7 +29,7 @@
 
         public void Work()
         {
-            Console.WriteLine($"{this.Name} is working!");
+            Console.WriteLine($"{Name} is working!");
         }
         public virtual void Description()
         {
@@ -73,18 +73,18 @@
     #endregion
 
     #region Static
-     /*
-     * Static can be used by the following:
-     * 1. Methods
-     * 2. Properties
-     * 3. Classes
-     * 4. Constructors
-     * 
-     * When using static on a class, every method and property needs to be
-     * static and cannot be accessed from an instance object since you
-     * cannot create an object instance. Plus, cannot be inherited by a
-     * child class.
-     */
+    /*
+    * Static can be used by the following:
+    * 1. Methods
+    * 2. Properties
+    * 3. Classes
+    * 4. Constructors
+    * 
+    * When using static on a class, every method and property needs to be
+    * static and cannot be accessed from an instance object since you
+    * cannot create an object instance. Plus, cannot be inherited by a
+    * child class.
+    */
 
     public static class Operation
     {
@@ -97,7 +97,8 @@
     }
     #endregion
 
-    #region Exercise Methods
+    #region Exercises
+    // Execution Methods
     public static void Exercise1()
     {
         try
@@ -158,11 +159,80 @@
             Console.WriteLine(ex.Message);
         }
     }
+    public static void Exercise3()
+    {
+        var suv = new SUV("Bara' Yaish", "Ford Expedition", 72);
+        var motorcycle = new Motorcycle("Omar Yaish", "Suzuki 1000cc", 12);
+
+        Console.WriteLine($"Vehicle Counter: {Vehicle.VehicleCount}");
+        Console.WriteLine();
+
+        suv.ShowInfo();
+        Console.WriteLine();
+        motorcycle.ShowInfo();
+    }
+
+    // Helper Methods
     public static void EvenCounter(ref int counter, int start, int end)
     {
         for (int i = start; i <= end; i++)
         {
             if (i % 2 == 0) counter++;
+        }
+    }
+
+    // Classes
+    public interface IInforDisplay
+    {
+        public void ShowInfo(); // display vehicle info
+    }
+    public class Vehicle
+    {
+        protected decimal BasePrice { get; set; } = 20.0m;
+        public static int VehicleCount { get; set; } = 0;
+        public string OwnerName { get; set; }
+        public string ModelName { get; set; }
+        public int Hours { get; set; }
+
+        public Vehicle(string OwnerName, string ModelName, int Hours)
+        {
+            this.OwnerName = OwnerName;
+            this.ModelName = ModelName;
+            this.Hours = Hours;
+
+            VehicleCount++;
+        }
+
+        public virtual decimal CalculateTotalPrice() => BasePrice * Hours;
+    }
+    public class SUV : Vehicle, IInforDisplay 
+    {
+        public SUV(string OwnerName, string ModelName, int Hours)
+            : base(OwnerName, ModelName, Hours) { }
+
+        public override decimal CalculateTotalPrice() => (BasePrice + 10) * Hours;
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Owner: {OwnerName}");
+            Console.WriteLine($"Type: {GetType().Name}");
+            Console.WriteLine($"Model: {ModelName}");
+            Console.WriteLine($"Hours: {Hours}");
+            Console.WriteLine($"Total Fee: {CalculateTotalPrice()} JOD");
+        }
+    }
+    public class Motorcycle : Vehicle, IInforDisplay
+    {
+        public Motorcycle(string OwnerName, string ModelName, int Hours)
+            : base(OwnerName, ModelName, Hours) { }
+
+        public override decimal CalculateTotalPrice() => (BasePrice - 5) * Hours;
+        public void ShowInfo()
+        {
+            Console.WriteLine($"Owner: {OwnerName}");
+            Console.WriteLine($"Type: {GetType().Name}");
+            Console.WriteLine($"Model: {ModelName}");
+            Console.WriteLine($"Hours: {Hours}");
+            Console.WriteLine($"Total Fee: {CalculateTotalPrice()} JOD");
         }
     }
     #endregion
