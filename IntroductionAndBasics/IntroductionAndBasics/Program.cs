@@ -3,7 +3,7 @@ public class Program
 {
     public static void Main()
     {
-        Exercise3();
+        ArrayExample();
     }
 
     #region OOP
@@ -94,6 +94,31 @@ public class Program
             Counter++;
         }
         public static int Add(int x, int y) => x + y;
+    }
+    #endregion
+
+    #region Array
+    public static void ArrayExample()
+    {
+        int[] numbersFixed = new int[5];
+        int[] numbersFilled = { 1, 2, 3, 4, 5 };
+        int[] numbersUnsorted = { 5, 2, 1, 3, 4 };
+        int[] numbersFixedFilled = new int[5] { 1, 2, 3, 4, 5 };
+
+        Array.Sort(numbersUnsorted);
+        foreach (var item in numbersUnsorted) Console.WriteLine(item);
+    }
+    #endregion
+
+    #region List
+    public static void ListExample<T>(T genericType)
+    {
+        var listEmpty = new List<int>();
+        var listFilled = new List<int>() { 1, 2, 3 };
+
+        listFilled.Remove(0);
+        listFilled.RemoveAt(0);
+        listFilled.Clear();
     }
     #endregion
 
@@ -205,7 +230,7 @@ public class Program
 
         public virtual decimal CalculateTotalPrice() => BasePrice * Hours;
     }
-    public class SUV : Vehicle, IInforDisplay 
+    public class SUV : Vehicle, IInforDisplay
     {
         public SUV(string OwnerName, string ModelName, int Hours)
             : base(OwnerName, ModelName, Hours) { }
