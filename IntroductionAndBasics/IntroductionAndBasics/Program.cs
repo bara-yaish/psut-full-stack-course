@@ -1,9 +1,10 @@
-﻿namespace IntroductionAndBasics;
+﻿using System.Text.Json;
+
+namespace IntroductionAndBasics;
 public class Program
 {
     public static void Main()
     {
-        ArrayExample();
     }
 
     #region OOP
@@ -122,6 +123,70 @@ public class Program
     }
     #endregion
 
+    #region LinQ
+    public static void LinqExample()
+    {
+        var grades = new List<int>() { 55, 12, 67, 78, 90, 30 };
+        var passedList = new List<int>();
+
+        foreach (var grade in grades)
+        {
+            if (grade > 50) passedList.Add(grade);
+        }
+
+        // LinQ --> Query Syntax
+        // IEnumerable is a lightweight version of List and is read-only
+        var passedListLinq = (from grade in grades
+                             where grade > 50 && grade <= 100
+                             orderby grade descending
+                             select $"Grade: {grade}").ToList();
+
+        foreach (var grade in passedListLinq) Console.WriteLine(grade);
+        Console.WriteLine();
+
+        var students = new List<Student>
+        {
+            new()
+            {
+                Name = "Bara",
+                Age = 23,
+                Grade = 90
+            },
+            new()
+            {
+                Name = "Omar",
+                Age = 25,
+                Grade = 99
+            },
+            new()
+            {
+                Name = "Anas",
+                Age = 18,
+                Grade = 75
+            },
+            new()
+            {
+                Name = "Someone",
+                Age = 29,
+                Grade = 40
+            }
+        };
+
+        var passedStudents = from student in students
+                            where student.Grade > 50
+                            orderby student.Age descending
+                            select new { student.Name, student.Grade };
+
+        foreach (var student in passedStudents) Console.WriteLine(JsonSerializer.Serialize(student));
+    }
+    public class Student
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+        public int Grade { get; set; }
+    }
+    #endregion
+
     #region Exercises
     // Execution Methods
     public static void Exercise1()
@@ -196,6 +261,32 @@ public class Program
         Console.WriteLine();
         motorcycle.ShowInfo();
     }
+    public static void Exercise4()
+    {
+        var products = new List<Product>()
+        {
+            new() { Name = "Laptop", Category = "Electronics", Price = 1200.00m, IsListed = true },
+            new() { Name = "Smartphone", Category = "Electronics", Price = 800.00m, IsListed = false },
+            new() { Name = "Desk", Category = "Furniture", Price = 300.00m, IsListed = true },
+            new() { Name = "Novel", Category = "Books", Price = 25.00m, IsListed = true },
+            new() { Name = "Blender", Category = "Appliances", Price = 150.00m, IsListed = false },
+            new() { Name = "Headphones", Category = "Electronics", Price = 90.00m, IsListed = true }
+        };
+
+        // Method Syntax
+        var filteredProducts = products
+            .Where(product => product.Category == "Electronics" && product.IsListed)
+            .OrderByDescending(product => product.Price)
+            .Select(product => new { product.Name, product.Price });
+
+        // Query Syntax
+        filteredProducts = from product in products
+                           where product.IsListed && product.Category == "Electronics"
+                           orderby product.Price descending
+                           select new { product.Name, product.Price };
+
+        foreach (var product in filteredProducts) Console.WriteLine($"Product Name: {product.Name}, Product Price: {product.Price}");
+    }
 
     // Helper Methods
     public static void EvenCounter(ref int counter, int start, int end)
@@ -259,6 +350,13 @@ public class Program
             Console.WriteLine($"Hours: {Hours}");
             Console.WriteLine($"Total Fee: {CalculateTotalPrice()} JOD");
         }
+    }
+    public class Product
+    {
+        public string Name { get; set; }
+        public string Category { get; set; }
+        public decimal Price { get; set; }
+        public bool IsListed { get; set; }
     }
     #endregion
 }
