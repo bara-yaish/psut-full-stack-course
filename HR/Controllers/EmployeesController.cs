@@ -1,5 +1,4 @@
 ﻿using HR.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR.Controllers
@@ -17,7 +16,7 @@ namespace HR.Controllers
             new () { Name = "Someone else", Age = 23, Position = "Manager" },
         ];
 
-        [HttpGet("GetEmployees")]
+        [HttpGet("GetAll")]
         public IActionResult GetEmployee([FromQuery] string position)
         {
             var employees = from employee in employeesList
