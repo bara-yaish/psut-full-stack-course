@@ -9,7 +9,7 @@ namespace HR.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        List<Employee> employeesList =
+        public static List<Employee> employeesList =
         [
             new () { Id = 1, Name = "Bara' Yaish", Age = 23, Position = "Developer", IsActive = true, StartDate = new DateTime(2025, 1, 1) },
             new () { Id = 2, Name = "Arab Yaish", Age = 23, Position = "Manager", IsActive = true, StartDate = new DateTime(2015, 10, 24) },
@@ -23,7 +23,7 @@ namespace HR.Controllers
                             where (position == null || employee.Position == position)
                             orderby employee.Age
                             select new EmployeeDto
-                            { 
+                            {
                                 Id = employee.Id,
                                 Name = employee.Name,
                                 Position = employee.Position,
@@ -51,6 +51,23 @@ namespace HR.Controllers
                 .FirstOrDefault(employee => employee.Id == id);
 
             return Ok(employee);
+        }
+
+        [HttpPost("Add")]
+        public IActionResult Add(SaveEmployeeDto newEmployee)
+        {
+            employeesList.Add(new ()
+            {
+                Id = (employeesList.LastOrDefault()?.Id ?? 0) + 1,
+                Name = newEmployee.Name,
+                Position = newEmployee.Position,
+                Age = newEmployee.Age,
+                IsActive = newEmployee.IsActive,
+                StartDate = newEmployee.StartDate,
+                EndDate = newEmployee.EndDate
+            });
+
+            return Created();
         }
     }
 }
