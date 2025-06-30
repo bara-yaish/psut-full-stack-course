@@ -123,7 +123,7 @@ public class Program
     }
     #endregion
 
-    #region LinQ
+    #region LINQ
     public static void LinqExample()
     {
         var grades = new List<int>() { 55, 12, 67, 78, 90, 30 };
@@ -134,7 +134,7 @@ public class Program
             if (grade > 50) passedList.Add(grade);
         }
 
-        // LinQ --> Query Syntax
+        // LINQ --> Query Syntax
         // IEnumerable is a lightweight version of List and is read-only
         var passedListLinq = (from grade in grades
                              where grade > 50 && grade <= 100
