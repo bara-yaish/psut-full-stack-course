@@ -69,5 +69,26 @@ namespace HR.Controllers
 
             return Created();
         }
+
+        [HttpPut("Update")]
+        public IActionResult Update(SaveEmployeeDto updateEmployee)
+        {
+            var targetEmployee = employeesList
+                .FirstOrDefault(employee => employee.Id == updateEmployee.Id);
+
+            if (targetEmployee is null)
+            {
+                return BadRequest($"Employee ({updateEmployee.Id}) Not Found");
+            }
+
+            targetEmployee.Name = updateEmployee.Name;
+            targetEmployee.Position = updateEmployee.Position;
+            targetEmployee.Age = updateEmployee.Age;
+            targetEmployee.IsActive = updateEmployee.IsActive;
+            targetEmployee.StartDate = updateEmployee.StartDate;
+            targetEmployee.EndDate = updateEmployee.EndDate;
+
+            return NoContent();
+        }
     }
 }
