@@ -90,5 +90,20 @@ namespace HR.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("Delete")]
+        public IActionResult Delete(long id)
+        {
+            var targetEmployee = employeesList
+                .FirstOrDefault(employee => employee.Id == id);
+
+            if (targetEmployee is null)
+            {
+                return BadRequest($"Employee ({id}) Not Found");
+            }
+
+            employeesList.Remove(targetEmployee);
+            return Ok();
+        }
     }
 }
