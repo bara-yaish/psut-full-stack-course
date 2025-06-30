@@ -1,4 +1,5 @@
 ﻿using HR.Models;
+using HR.DTOs.Employees;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR.Controllers
@@ -10,25 +11,46 @@ namespace HR.Controllers
     {
         List<Employee> employeesList =
         [
-            new () { Name = "Bara' Yaish", Age = 23, Position = "Developer" },
-            new () { Name = "Omar Yaish", Age = 23, Position = "Developer" },
-            new () { Name = "Someone", Age = 25, Position = "HR" },
-            new () { Name = "Someone else", Age = 23, Position = "Manager" },
+            new () { Id = 1, Name = "Bara' Yaish", Age = 23, Position = "Developer", IsActive = true, StartDate = new DateTime(2025, 1, 1) },
+            new () { Id = 2, Name = "Arab Yaish", Age = 23, Position = "Manager", IsActive = true, StartDate = new DateTime(2015, 10, 24) },
+            new () { Id = 3, Name = "Raab Yaish", Age = 23, Position = "HR", IsActive = false, StartDate = new DateTime(2020, 5, 27) },
         ];
 
         [HttpGet("GetAll")]
-        public IActionResult GetEmployee([FromQuery] string position)
+        public IActionResult GetAll(string? position)
         {
             var employees = from employee in employeesList
-                            where employee.Position == position
+                            where (position == null || employee.Position == position)
                             orderby employee.Age
-                            select new 
+                            select new EmployeeDto
                             { 
-                                employee.Name,
-                                employee.Position,
+                                Id = employee.Id,
+                                Name = employee.Name,
+                                Position = employee.Position,
+                                Age = employee.Age,
+                                IsActive = employee.IsActive,
+                                StartDate = employee.StartDate
                             };
 
             return Ok(employees);
+        }
+
+        [HttpGet("GetById")]
+        public IActionResult GetById(long id)
+        {
+            var employee = employeesList
+                .Select(employee => new EmployeeDto
+                {
+                    Id = employee.Id,
+                    Name = employee.Name,
+                    Position = employee.Position,
+                    Age = employee.Age,
+                    IsActive = employee.IsActive,
+                    StartDate = employee.StartDate
+                })
+                .FirstOrDefault(employee => employee.Id == id);
+
+            return Ok(employee);
         }
     }
 }
