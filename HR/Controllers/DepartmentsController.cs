@@ -46,6 +46,13 @@ namespace HR.Controllers
             try
             {
                 var department = _departments
+                    .Select(department => new DepartmentDto()
+                    {
+                        Id = department.Id,
+                        Name = department.Name,
+                        Description = department.Description,
+                        FloorNumber = department.FloorNumber
+                    })
                     .FirstOrDefault(department => department.Id == id);
 
                 if (department == null) return NotFound($"Department with ID ({id}) does not exist");
