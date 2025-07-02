@@ -9,7 +9,17 @@ namespace HR.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        public static List<Employee> employeesList =
+        // Simple Data Type : long, int, string.... | Query Parameter (By Default)
+        // Complex Data Type : Model, Dto (object)  | Request Body (By Default)
+
+        // Http Get : Can Not Use Body Request [FromBody], We Can Only Use Query Parameter [FromQuery]
+        // Http Put/Post : Can Use Both Body Request [FromBody] And Query Parameter [FromQuery], But We Will Only Use [FromBody]
+        // Http Delete : Can Use Both Body Request [FromBody] And Query Parameter [FromQuery], But We Will Only Use [FromQuery]
+
+        // Can't Use Multiple Parameters Of Type [FromBody]
+        // Can Use Multiple Parameters Of Type [FromQuery]
+
+        private static List<Employee> employeesList =
         [
             new () { Id = 1, Name = "Bara' Yaish", Age = 23, Position = "Developer", IsActive = true, StartDate = new DateTime(2025, 1, 1) },
             new () { Id = 2, Name = "Arab Yaish", Age = 23, Position = "Manager", IsActive = true, StartDate = new DateTime(2015, 10, 24) },
@@ -17,10 +27,10 @@ namespace HR.Controllers
         ];
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll(string? position)
+        public IActionResult GetAll([FromQuery] string? position)
         {
             var employees = from employee in employeesList
-                            where (position == null || employee.Position == position)
+                            where (position == null || employee.Position.ToLower().Contains(position.ToLower()))
                             orderby employee.Age
                             select new EmployeeDto
                             {
@@ -36,7 +46,7 @@ namespace HR.Controllers
         }
 
         [HttpGet("GetById")]
-        public IActionResult GetById(long id)
+        public IActionResult GetById([FromQuery] long id)
         {
             var employee = employeesList
                 .Select(employee => new EmployeeDto
@@ -54,7 +64,7 @@ namespace HR.Controllers
         }
 
         [HttpPost("Add")]
-        public IActionResult Add(SaveEmployeeDto newEmployee)
+        public IActionResult Add([FromBody] SaveEmployeeDto newEmployee)
         {
             employeesList.Add(new ()
             {
@@ -71,7 +81,7 @@ namespace HR.Controllers
         }
 
         [HttpPut("Update")]
-        public IActionResult Update(SaveEmployeeDto updateEmployee)
+        public IActionResult Update([FromBody] SaveEmployeeDto updateEmployee)
         {
             var targetEmployee = employeesList
                 .FirstOrDefault(employee => employee.Id == updateEmployee.Id);
@@ -92,7 +102,7 @@ namespace HR.Controllers
         }
 
         [HttpDelete("Delete")]
-        public IActionResult Delete(long id)
+        public IActionResult Delete([FromQuery] long id)
         {
             var targetEmployee = employeesList
                 .FirstOrDefault(employee => employee.Id == id);

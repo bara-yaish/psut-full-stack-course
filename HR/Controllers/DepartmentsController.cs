@@ -1,8 +1,6 @@
 ﻿using HR.DTOs.Departments;
 using HR.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Xml.Linq;
 
 namespace HR.Controllers
 {
@@ -10,7 +8,7 @@ namespace HR.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private static List<Department> _departments = new()
+        private static List<Department> departments = new()
         {
             new Department { Id = 1, Name = "IT", Description = "Provides technical assistance to staff and clients", FloorNumber = 4 },
             new Department { Id = 2, Name = "Development", Description = "Builds and maintains software products and applications", FloorNumber = 3 },
@@ -18,12 +16,12 @@ namespace HR.Controllers
         };
 
         [HttpGet("GetAll")]
-        public IActionResult GetAllDepartments(string? name)
+        public IActionResult GetAllDepartments([FromQuery] string? name)
         {
             try
             {
-                var allDepartments = _departments
-                    .Where(department => (name == null || department.Name.Equals(name)))
+                var allDepartments = departments
+                    .Where(department => (name == null || department.Name.ToLower().Equals(name.ToLower())))
                     .Select(department => new DepartmentDto
                     {
                         Id = department.Id,
@@ -41,11 +39,11 @@ namespace HR.Controllers
         }
 
         [HttpGet("GetById")]
-        public IActionResult GetDepartmentById (long id)
+        public IActionResult GetDepartmentById ([FromQuery] long id)
         {
             try
             {
-                var department = _departments
+                var department = departments
                     .Select(department => new DepartmentDto()
                     {
                         Id = department.Id,
@@ -66,13 +64,13 @@ namespace HR.Controllers
         }
 
         [HttpPost("Add")]
-        public IActionResult AddDepartment(SaveDepartmentDto newDepartment)
+        public IActionResult AddDepartment([FromQuery] SaveDepartmentDto newDepartment)
         {
             try
             {
-                _departments.Add(new Department()
+                departments.Add(new Department()
                 {
-                    Id = (_departments.LastOrDefault()?.Id ?? 0) + 1,
+                    Id = (departments.LastOrDefault()?.Id ?? 0) + 1,
                     Name = newDepartment.Name,
                     Description = newDepartment.Description,
                     FloorNumber = newDepartment.FloorNumber
@@ -87,11 +85,11 @@ namespace HR.Controllers
         }
 
         [HttpPut("Update")]
-        public IActionResult UpdateDepartment(SaveDepartmentDto updateDepartment)
+        public IActionResult UpdateDepartment([FromQuery] SaveDepartmentDto updateDepartment)
         {
             try
             {
-                var department = _departments
+                var department = departments
                     .FirstOrDefault(department => department.Id == updateDepartment.Id);
 
                 if (department == null) return NotFound($"Department with ID ({updateDepartment.Id}) does not exist");
@@ -109,16 +107,16 @@ namespace HR.Controllers
         }
 
         [HttpDelete("Delete")]
-        public IActionResult DeleteDepartment(long id)
+        public IActionResult DeleteDepartment([FromQuery] long id)
         {
             try
             {
-                var department = _departments
+                var department = departments
                     .FirstOrDefault(department => department.Id == id);
 
                 if (department == null) return NotFound($"Department with ID ({id}) does not exist");
 
-                _departments.Remove(department);
+                departments.Remove(department);
 
                 return Ok($"Department with ID ({id}) is deleted successfully");
             }
