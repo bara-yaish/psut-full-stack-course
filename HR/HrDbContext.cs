@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HR
 {
     // DbContext Class: A gateway to the database
-    // This HrDbContext class represents the entire HR entity
+    // This HrDbContext class represents the entire HR database
     public class HrDbContext : DbContext
     {
         // DbContextOptions is a setup for two things:
