@@ -1,15 +1,23 @@
+using HR;
+using Microsoft.EntityFrameworkCore;
+
+// builder - prepares the project
+// app - starts the project
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Setup the connection options to the HR database
+builder.Services.AddDbContext<HrDbContext>
+(
+    options => options.UseSqlServer(builder.Configuration.GetConnectionString("HrContext"))
+);
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

@@ -19,6 +19,8 @@ namespace HR.Controllers
         // Can't Use Multiple Parameters Of Type [FromBody]
         // Can Use Multiple Parameters Of Type [FromQuery]
 
+        private HrDbContext _dbContext;
+
         private static List<Employee> employeesList =
         [
             new () { Id = 1, Name = "Bara' Yaish", Age = 23, Position = "Developer", IsActive = true, StartDate = new DateTime(2025, 1, 1) },
@@ -26,12 +28,15 @@ namespace HR.Controllers
             new () { Id = 3, Name = "Raab Yaish", Age = 23, Position = "HR", IsActive = false, StartDate = new DateTime(2020, 5, 27) },
         ];
 
+        // Dependency Injection
+        public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
+
         [HttpGet("GetAll")]
         public IActionResult GetAll([FromQuery] string? position)
         {
-            var employees = from employee in employeesList
+            var employees = from employee in _dbContext.Employees
                             where (position == null || employee.Position.ToLower().Contains(position.ToLower()))
-                            orderby employee.Age
+                            orderby employee.Id
                             select new EmployeeDto
                             {
                                 Id = employee.Id,
