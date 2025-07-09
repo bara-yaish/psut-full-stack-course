@@ -110,20 +110,27 @@ namespace HR.Controllers
         [HttpPut("Update")]
         public IActionResult Update([FromBody] SaveEmployeeDto updateEmployee)
         {
-            var targetEmployee = employeesList
+            var targetEmployee = _dbContext.Employees
                 .FirstOrDefault(employee => employee.Id == updateEmployee.Id);
 
             if (targetEmployee is null)
             {
-                return BadRequest($"Employee ({updateEmployee.Id}) Not Found");
+                return BadRequest($"Employee {updateEmployee.Id} Not Found");
             }
 
             targetEmployee.Name = updateEmployee.Name;
             targetEmployee.Position = updateEmployee.Position;
             targetEmployee.Age = updateEmployee.Age;
+            targetEmployee.Phone = updateEmployee.Phone;
+            targetEmployee.Position = updateEmployee.Position;
             targetEmployee.IsActive = updateEmployee.IsActive;
             targetEmployee.StartDate = updateEmployee.StartDate;
             targetEmployee.EndDate = updateEmployee.EndDate;
+            targetEmployee.DepartmentId = updateEmployee.DepartmentId;
+            targetEmployee.ManagerId = updateEmployee.ManagerId;
+
+            _dbContext.Employees.Update(targetEmployee);
+            _dbContext.SaveChanges();
 
             return NoContent();
         }
