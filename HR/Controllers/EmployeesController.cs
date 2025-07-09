@@ -31,8 +31,8 @@ namespace HR.Controllers
                             from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
                             from manager in _dbContext.Employees.AsNoTracking().Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
                             where 
-                                (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.Contains(filters.Name, StringComparison.OrdinalIgnoreCase)) && 
-                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.Contains(filters.Position, StringComparison.OrdinalIgnoreCase)) && 
+                                (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
+                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
                                 (filters.IsActive || employee.IsActive == filters.IsActive)
                             orderby 
                                 employee.Id
