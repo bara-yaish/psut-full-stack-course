@@ -1,5 +1,6 @@
 ﻿using HR.DTOs.Employees;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HR.Controllers
 {
@@ -18,7 +19,7 @@ namespace HR.Controllers
         // Can't Use Multiple Parameters Of Type [FromBody]
         // Can Use Multiple Parameters Of Type [FromQuery]
 
-        private HrDbContext _dbContext;
+        private readonly HrDbContext _dbContext;
 
         // Dependency Injection
         public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
@@ -26,12 +27,12 @@ namespace HR.Controllers
         [HttpGet("GetAll")]
         public IActionResult GetAll([FromQuery] FilterEmployeeDto filters)
         {
-            var employees = from employee in _dbContext.Employees
-                            from department in _dbContext.Departments.Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
-                            from manager in _dbContext.Employees.Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
+            var employees = from employee in _dbContext.Employees.AsNoTracking()
+                            from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
+                            from manager in _dbContext.Employees.AsNoTracking().Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
                             where 
-                                (filters.Name == null || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
-                                (filters.Position == null || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
+                                (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.Contains(filters.Name, StringComparison.OrdinalIgnoreCase)) && 
+                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.Contains(filters.Position, StringComparison.OrdinalIgnoreCase)) && 
                                 (filters.IsActive || employee.IsActive == filters.IsActive)
                             orderby 
                                 employee.Id
@@ -58,6 +59,7 @@ namespace HR.Controllers
         public IActionResult GetById([FromQuery] long id)
         {
             var employee = _dbContext.Employees
+                .AsNoTracking()
                 .Select(employee => new EmployeeDto
                 {
                     Id = employee.Id,
