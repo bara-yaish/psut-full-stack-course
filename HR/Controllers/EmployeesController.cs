@@ -1,5 +1,4 @@
-﻿using HR.Models;
-using HR.DTOs.Employees;
+﻿using HR.DTOs.Employees;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HR.Controllers
@@ -20,13 +19,6 @@ namespace HR.Controllers
         // Can Use Multiple Parameters Of Type [FromQuery]
 
         private HrDbContext _dbContext;
-
-        private static List<Employee> employeesList =
-        [
-            new () { Id = 1, Name = "Bara' Yaish", Age = 23, Position = "Developer", IsActive = true, StartDate = new DateTime(2025, 1, 1) },
-            new () { Id = 2, Name = "Arab Yaish", Age = 23, Position = "Manager", IsActive = true, StartDate = new DateTime(2015, 10, 24) },
-            new () { Id = 3, Name = "Raab Yaish", Age = 23, Position = "HR", IsActive = false, StartDate = new DateTime(2020, 5, 27) },
-        ];
 
         // Dependency Injection
         public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
@@ -90,9 +82,7 @@ namespace HR.Controllers
         {
             _dbContext.Employees.Add(new ()
             {
-                Id = (employeesList.LastOrDefault()?.Id ?? 0) + 1,
                 Name = newEmployee.Name,
-                Position = newEmployee.Position,
                 Age = newEmployee.Age,
                 Phone = newEmployee.Phone,
                 Position = newEmployee.Position,
@@ -119,7 +109,6 @@ namespace HR.Controllers
             }
 
             targetEmployee.Name = updateEmployee.Name;
-            targetEmployee.Position = updateEmployee.Position;
             targetEmployee.Age = updateEmployee.Age;
             targetEmployee.Phone = updateEmployee.Phone;
             targetEmployee.Position = updateEmployee.Position;
