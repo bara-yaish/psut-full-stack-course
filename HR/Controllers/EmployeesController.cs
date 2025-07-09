@@ -138,15 +138,17 @@ namespace HR.Controllers
         [HttpDelete("Delete")]
         public IActionResult Delete([FromQuery] long id)
         {
-            var targetEmployee = employeesList
+            var targetEmployee = _dbContext.Employees
                 .FirstOrDefault(employee => employee.Id == id);
 
             if (targetEmployee is null)
             {
-                return BadRequest($"Employee ({id}) Not Found");
+                return BadRequest($"Employee {id} Not Found");
             }
 
-            employeesList.Remove(targetEmployee);
+            _dbContext.Employees.Remove(targetEmployee);
+            _dbContext.SaveChanges();
+
             return Ok();
         }
     }
