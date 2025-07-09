@@ -28,7 +28,7 @@ namespace HR.Controllers
         public IActionResult GetAll([FromQuery] FilterEmployeeDto filters)
         {
             var employees = from employee in _dbContext.Employees.AsNoTracking()
-                            from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
+                            from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty() // Where == INNER JOIN | DefaultIfEmpty == LEFT JOIN
                             from manager in _dbContext.Employees.AsNoTracking().Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
                             where 
                                 (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
