@@ -29,24 +29,27 @@ namespace HR.Controllers
             var employees = from employee in _dbContext.Employees
                             from department in _dbContext.Departments.Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
                             from manager in _dbContext.Employees.Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
-                            where (filters.Name == null || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
-                            (filters.Position == null || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
-                            (filters.IsActive || employee.IsActive == filters.IsActive)
-                            orderby employee.Id
-                            select new EmployeeDto
-                            {
-                                Id = employee.Id,
-                                Name = employee.Name,
-                                Position = employee.Position,
-                                Age = employee.Age,
-                                IsActive = employee.IsActive,
-                                StartDate = employee.StartDate,
-                                Phone = employee.Phone,
-                                ManagerId = employee.ManagerId,
-                                ManagerName = manager.Name,
-                                DepartmentId = employee.DepartmentId,
-                                DepartmentName = department.Name
-                            };
+                            where 
+                                (filters.Name == null || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
+                                (filters.Position == null || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
+                                (filters.IsActive || employee.IsActive == filters.IsActive)
+                            orderby 
+                                employee.Id
+                            select 
+                                new EmployeeDto
+                                {
+                                    Id = employee.Id,
+                                    Name = employee.Name,
+                                    Position = employee.Position,
+                                    Age = employee.Age,
+                                    IsActive = employee.IsActive,
+                                    StartDate = employee.StartDate,
+                                    Phone = employee.Phone,
+                                    ManagerId = employee.ManagerId,
+                                    ManagerName = manager.Name,
+                                    DepartmentId = employee.DepartmentId,
+                                    DepartmentName = department.Name
+                                };
 
             return Ok(employees);
         }
