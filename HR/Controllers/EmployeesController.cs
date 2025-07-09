@@ -32,10 +32,14 @@ namespace HR.Controllers
         public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
 
         [HttpGet("GetAll")]
-        public IActionResult GetAll([FromQuery] string? position)
+        public IActionResult GetAll([FromQuery] FilterEmployeeDto filters)
         {
             var employees = from employee in _dbContext.Employees
-                            where (position == null || employee.Position.ToLower().Contains(position.ToLower()))
+                            from department in _dbContext.Departments.Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty()
+                            from manager in _dbContext.Employees.Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
+                            where (filters.Name == null || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
+                            (filters.Position == null || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
+                            (filters.IsActive || employee.IsActive == filters.IsActive)
                             orderby employee.Id
                             select new EmployeeDto
                             {
@@ -44,7 +48,12 @@ namespace HR.Controllers
                                 Position = employee.Position,
                                 Age = employee.Age,
                                 IsActive = employee.IsActive,
-                                StartDate = employee.StartDate
+                                StartDate = employee.StartDate,
+                                Phone = employee.Phone,
+                                ManagerId = employee.ManagerId,
+                                ManagerName = manager.Name,
+                                DepartmentId = employee.DepartmentId,
+                                DepartmentName = department.Name
                             };
 
             return Ok(employees);
