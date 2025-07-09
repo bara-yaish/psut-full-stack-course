@@ -88,16 +88,21 @@ namespace HR.Controllers
         [HttpPost("Add")]
         public IActionResult Add([FromBody] SaveEmployeeDto newEmployee)
         {
-            employeesList.Add(new ()
+            _dbContext.Employees.Add(new ()
             {
                 Id = (employeesList.LastOrDefault()?.Id ?? 0) + 1,
                 Name = newEmployee.Name,
                 Position = newEmployee.Position,
                 Age = newEmployee.Age,
+                Phone = newEmployee.Phone,
+                Position = newEmployee.Position,
                 IsActive = newEmployee.IsActive,
                 StartDate = newEmployee.StartDate,
-                EndDate = newEmployee.EndDate
+                EndDate = newEmployee.EndDate,
+                DepartmentId = newEmployee.DepartmentId,
+                ManagerId = newEmployee.ManagerId,
             });
+            _dbContext.SaveChanges(); //It won't save the added changes unless this method is called
 
             return Created();
         }
