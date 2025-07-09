@@ -20,5 +20,6 @@ namespace HR
         // DbSet - a list of records of type T from the database
         // Any Model MUST match 100% the same structure as the one in the table
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
     }
 }
