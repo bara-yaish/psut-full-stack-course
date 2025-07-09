@@ -62,7 +62,7 @@ namespace HR.Controllers
         [HttpGet("GetById")]
         public IActionResult GetById([FromQuery] long id)
         {
-            var employee = employeesList
+            var employee = _dbContext.Employees
                 .Select(employee => new EmployeeDto
                 {
                     Id = employee.Id,
@@ -70,9 +70,17 @@ namespace HR.Controllers
                     Position = employee.Position,
                     Age = employee.Age,
                     IsActive = employee.IsActive,
-                    StartDate = employee.StartDate
+                    StartDate = employee.StartDate,
+                    Phone = employee.Phone,
+                    ManagerId = employee.ManagerId,
+                    DepartmentId = employee.DepartmentId,
                 })
                 .FirstOrDefault(employee => employee.Id == id);
+
+            if (employee is null)
+            {
+                return BadRequest($"Employee {id} Not Found");
+            }
 
             return Ok(employee);
         }
