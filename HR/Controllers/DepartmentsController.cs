@@ -8,19 +8,19 @@ namespace HR.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private static List<Department> departments = new()
+        private readonly HrDbContext _dbContext;
+
+        public DepartmentsController(HrDbContext dbContext)
         {
-            new Department { Id = 1, Name = "IT", Description = "Provides technical assistance to staff and clients", FloorNumber = 4 },
-            new Department { Id = 2, Name = "Development", Description = "Builds and maintains software products and applications", FloorNumber = 3 },
-            new Department { Id = 3, Name = "Sales & Marketing", Description = "Promotes products, acquires customers, and drives revenue", FloorNumber = 1 }
-        };
+            _dbContext = dbContext;
+        }
 
         [HttpGet("GetAll")]
         public IActionResult GetAllDepartments([FromQuery] string? name)
         {
             try
             {
-                var allDepartments = departments
+                var allDepartments = _dbContext.Departments
                     .Where(department => (name == null || department.Name.ToLower().Equals(name.ToLower())))
                     .Select(department => new DepartmentDto
                     {
@@ -43,7 +43,7 @@ namespace HR.Controllers
         {
             try
             {
-                var department = departments
+                var department = _dbContext.Departments
                     .Select(department => new DepartmentDto()
                     {
                         Id = department.Id,
@@ -64,17 +64,17 @@ namespace HR.Controllers
         }
 
         [HttpPost("Add")]
-        public IActionResult AddDepartment([FromQuery] SaveDepartmentDto newDepartment)
+        public IActionResult AddDepartment([FromBody] SaveDepartmentDto newDepartment)
         {
             try
             {
-                departments.Add(new Department()
+                _dbContext.Departments.Add(new Department()
                 {
-                    Id = (departments.LastOrDefault()?.Id ?? 0) + 1,
                     Name = newDepartment.Name,
                     Description = newDepartment.Description,
                     FloorNumber = newDepartment.FloorNumber
                 });
+                _dbContext.SaveChanges();
 
                 return Created();
             }
@@ -85,11 +85,11 @@ namespace HR.Controllers
         }
 
         [HttpPut("Update")]
-        public IActionResult UpdateDepartment([FromQuery] SaveDepartmentDto updateDepartment)
+        public IActionResult UpdateDepartment([FromBody] SaveDepartmentDto updateDepartment)
         {
             try
             {
-                var department = departments
+                var department = _dbContext.Departments
                     .FirstOrDefault(department => department.Id == updateDepartment.Id);
 
                 if (department == null) return NotFound($"Department with ID ({updateDepartment.Id}) does not exist");
@@ -97,6 +97,8 @@ namespace HR.Controllers
                 department.Name = updateDepartment.Name;
                 department.Description = updateDepartment.Description;
                 department.FloorNumber = updateDepartment.FloorNumber;
+
+                _dbContext.SaveChanges();
 
                 return NoContent();
             }
@@ -111,12 +113,13 @@ namespace HR.Controllers
         {
             try
             {
-                var department = departments
+                var department = _dbContext.Departments
                     .FirstOrDefault(department => department.Id == id);
 
                 if (department == null) return NotFound($"Department with ID ({id}) does not exist");
 
-                departments.Remove(department);
+                _dbContext.Departments.Remove(department);
+                _dbContext.SaveChanges();
 
                 return Ok($"Department with ID ({id}) is deleted successfully");
             }

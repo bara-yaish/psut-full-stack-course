@@ -30,13 +30,13 @@ namespace HR.Controllers
             var employees = from employee in _dbContext.Employees.AsNoTracking()
                             from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty() // Where == INNER JOIN | DefaultIfEmpty == LEFT JOIN
                             from manager in _dbContext.Employees.AsNoTracking().Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
-                            where 
-                                (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) && 
-                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.ToLower().Contains(filters.Position.ToLower())) && 
+                            where
+                                (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) &&
+                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.ToLower().Contains(filters.Position.ToLower())) &&
                                 (filters.IsActive || employee.IsActive == filters.IsActive)
-                            orderby 
+                            orderby
                                 employee.Id
-                            select 
+                            select
                                 new EmployeeDto
                                 {
                                     Id = employee.Id,
@@ -70,7 +70,9 @@ namespace HR.Controllers
                     StartDate = employee.StartDate,
                     Phone = employee.Phone,
                     ManagerId = employee.ManagerId,
+                    ManagerName= employee.EmployeeRow.Name,
                     DepartmentId = employee.DepartmentId,
+                    DepartmentName = employee.DepartmentRow.Name
                 })
                 .FirstOrDefault(employee => employee.Id == id);
 
