@@ -42,7 +42,6 @@ namespace HR.Controllers
                                     Id = employee.Id,
                                     Name = employee.Name,
                                     Position = employee.Position,
-                                    Age = employee.Age,
                                     IsActive = employee.IsActive,
                                     StartDate = employee.StartDate,
                                     Phone = employee.Phone,
@@ -65,14 +64,13 @@ namespace HR.Controllers
                     Id = employee.Id,
                     Name = employee.Name,
                     Position = employee.Position,
-                    Age = employee.Age,
                     IsActive = employee.IsActive,
                     StartDate = employee.StartDate,
                     Phone = employee.Phone,
                     ManagerId = employee.ManagerId,
-                    ManagerName= employee.EmployeeRow.Name,
+                    ManagerName= employee.Manager.Name,
                     DepartmentId = employee.DepartmentId,
-                    DepartmentName = employee.DepartmentRow.Name
+                    DepartmentName = employee.Department.Name
                 })
                 .FirstOrDefault(employee => employee.Id == id);
 
@@ -90,7 +88,6 @@ namespace HR.Controllers
             _dbContext.Employees.Add(new ()
             {
                 Name = newEmployee.Name,
-                Age = newEmployee.Age,
                 Phone = newEmployee.Phone,
                 Position = newEmployee.Position,
                 IsActive = newEmployee.IsActive,
@@ -116,7 +113,6 @@ namespace HR.Controllers
             }
 
             targetEmployee.Name = updateEmployee.Name;
-            targetEmployee.Age = updateEmployee.Age;
             targetEmployee.Phone = updateEmployee.Phone;
             targetEmployee.Position = updateEmployee.Position;
             targetEmployee.IsActive = updateEmployee.IsActive;
