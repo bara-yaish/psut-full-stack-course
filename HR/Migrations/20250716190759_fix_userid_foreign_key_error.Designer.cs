@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    [Migration("20250716185434_new_column_user_id_and_modify_other_foreign_keys_name")]
-    partial class new_column_user_id_and_modify_other_foreign_keys_name
+    [Migration("20250716190759_fix_userid_foreign_key_error")]
+    partial class fix_userid_foreign_key_error
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -90,7 +90,7 @@ namespace HR.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("UserId")
+                    b.Property<long?>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -140,9 +140,7 @@ namespace HR.Migrations
 
                     b.HasOne("HR.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Department");
 

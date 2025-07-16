@@ -5,7 +5,7 @@
 namespace HR.Migrations
 {
     /// <inheritdoc />
-    public partial class new_column_user_id_and_modify_other_foreign_keys_name : Migration
+    public partial class fix_userid_foreign_key_error : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,8 +14,7 @@ namespace HR.Migrations
                 name: "UserId",
                 table: "Employees",
                 type: "bigint",
-                nullable: false,
-                defaultValue: 0L);
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_UserId",
@@ -27,8 +26,7 @@ namespace HR.Migrations
                 table: "Employees",
                 column: "UserId",
                 principalTable: "Users",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
