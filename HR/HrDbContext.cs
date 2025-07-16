@@ -43,5 +43,6 @@ namespace HR
         // Any Model MUST match 100% the same structure as the one in the table
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
