@@ -4,6 +4,7 @@ using HR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    partial class HrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716185118_new_users_table")]
+    partial class new_users_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,16 +90,11 @@ namespace HR.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("ManagerId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
                 });
@@ -127,25 +125,17 @@ namespace HR.Migrations
 
             modelBuilder.Entity("HR.Models.Employee", b =>
                 {
-                    b.HasOne("HR.Models.Department", "Department")
+                    b.HasOne("HR.Models.Department", "DepartmentRow")
                         .WithMany()
                         .HasForeignKey("DepartmentId");
 
-                    b.HasOne("HR.Models.Employee", "Manager")
+                    b.HasOne("HR.Models.Employee", "EmployeeRow")
                         .WithMany()
                         .HasForeignKey("ManagerId");
 
-                    b.HasOne("HR.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("DepartmentRow");
 
-                    b.Navigation("Department");
-
-                    b.Navigation("Manager");
-
-                    b.Navigation("User");
+                    b.Navigation("EmployeeRow");
                 });
 #pragma warning restore 612, 618
         }
