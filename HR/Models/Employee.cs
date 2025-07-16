@@ -23,12 +23,15 @@ namespace HR.Models
         // EF will automatically detect the Id in the referenced table and take that as a
         // reference even if the property name is not the same as the Id field in the Departments table.
         public long? DepartmentId { get; set; } // The Foreign Key
-        public Department? DepartmentRow { get; set; } // Navigation Property: The Department Table Reference (name does not matter)
-        [ForeignKey("EmployeeRow")]
+        public Department? Department { get; set; } // Navigation Property: The Department Table Reference (name does not matter)
+        [ForeignKey("Manager")]
         public long? ManagerId { get; set; }
-        public Employee? EmployeeRow { get; set; } // Navigation Property
+        public Employee? Manager { get; set; } // Navigation Property
 
         // Navigation properties can be used for JOIN statements
         // For Instance: employee.DepartmentRow.Name
+        [ForeignKey("User")]
+        public long UserId { get; set; }
+        public User? User { get; set; }
     }
 }
