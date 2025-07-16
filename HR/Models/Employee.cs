@@ -31,7 +31,7 @@ namespace HR.Models
         // Navigation properties can be used for JOIN statements
         // For Instance: employee.DepartmentRow.Name
         [ForeignKey("User")]
-        public long UserId { get; set; }
+        public long? UserId { get; set; }
         public User? User { get; set; }
     }
 }
