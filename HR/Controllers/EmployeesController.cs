@@ -42,6 +42,7 @@ namespace HR.Controllers
                                     Id = employee.Id,
                                     Name = employee.Name,
                                     Position = employee.Position,
+                                    BirthDate = employee.BirthDate,
                                     IsActive = employee.IsActive,
                                     StartDate = employee.StartDate,
                                     Phone = employee.Phone,
@@ -64,6 +65,7 @@ namespace HR.Controllers
                     Id = employee.Id,
                     Name = employee.Name,
                     Position = employee.Position,
+                    BirthDate = employee.BirthDate,
                     IsActive = employee.IsActive,
                     StartDate = employee.StartDate,
                     Phone = employee.Phone,
@@ -90,6 +92,7 @@ namespace HR.Controllers
                 Name = newEmployee.Name,
                 Phone = newEmployee.Phone,
                 Position = newEmployee.Position,
+                BirthDate = newEmployee.BirthDate,
                 IsActive = newEmployee.IsActive,
                 StartDate = newEmployee.StartDate,
                 EndDate = newEmployee.EndDate,
@@ -114,6 +117,7 @@ namespace HR.Controllers
 
             targetEmployee.Name = updateEmployee.Name;
             targetEmployee.Phone = updateEmployee.Phone;
+            targetEmployee.BirthDate = updateEmployee.BirthDate;
             targetEmployee.Position = updateEmployee.Position;
             targetEmployee.IsActive = updateEmployee.IsActive;
             targetEmployee.StartDate = updateEmployee.StartDate;
