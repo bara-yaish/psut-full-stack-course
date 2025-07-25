@@ -4,6 +4,7 @@ using HR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    partial class HrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250719073210_seeding_Admin_user")]
+    partial class seeding_Admin_user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -126,7 +129,7 @@ namespace HR.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookups");
+                    b.ToTable("Lookup");
 
                     b.HasData(
                         new
@@ -214,7 +217,7 @@ namespace HR.Migrations
                         new
                         {
                             Id = 1L,
-                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            HashedPassword = "$2a$11$qc5hdfdYOdR2AOrF33a/N.W9BbiyLcf1n6VZjJPqAxJUE5d8wqByG",
                             IsAdmin = true,
                             UserName = "Admin"
                         });

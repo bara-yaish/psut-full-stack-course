@@ -1,10 +1,13 @@
 ﻿using HR.DTOs.Employees;
+using HR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR.Controllers
 {
     // Data Annotation - Extra information given to a class, method or property
+    [Authorize] // To enable Jwt Authentication and Authorization we implemented
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
@@ -24,15 +27,17 @@ namespace HR.Controllers
         // Dependency Injection
         public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
 
+        [Authorize(Roles = "HR, Admin")]
         [HttpGet("GetAll")]
         public IActionResult GetAll([FromQuery] FilterEmployeeDto filters)
         {
             var employees = from employee in _dbContext.Employees.AsNoTracking()
                             from department in _dbContext.Departments.AsNoTracking().Where(x => x.Id == employee.DepartmentId).DefaultIfEmpty() // Where == INNER JOIN | DefaultIfEmpty == LEFT JOIN
                             from manager in _dbContext.Employees.AsNoTracking().Where(x => x.Id == employee.ManagerId).DefaultIfEmpty()
+                            from lookup in _dbContext.Lookups.AsNoTracking().Where(x => x.Id == employee.PositionId).DefaultIfEmpty()
                             where
+                                (filters.PositionId == null || employee.PositionId == filters.PositionId) &&
                                 (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) &&
-                                (string.IsNullOrWhiteSpace(filters.Position) || employee.Position.ToLower().Contains(filters.Position.ToLower())) &&
                                 (filters.IsActive || employee.IsActive == filters.IsActive)
                             orderby
                                 employee.Id
@@ -41,8 +46,8 @@ namespace HR.Controllers
                                 {
                                     Id = employee.Id,
                                     Name = employee.Name,
-                                    Position = employee.Position,
                                     BirthDate = employee.BirthDate,
+                                    Position = lookup.Name,
                                     IsActive = employee.IsActive,
                                     StartDate = employee.StartDate,
                                     Phone = employee.Phone,
@@ -64,7 +69,6 @@ namespace HR.Controllers
                 {
                     Id = employee.Id,
                     Name = employee.Name,
-                    Position = employee.Position,
                     BirthDate = employee.BirthDate,
                     IsActive = employee.IsActive,
                     StartDate = employee.StartDate,
@@ -87,19 +91,27 @@ namespace HR.Controllers
         [HttpPost("Add")]
         public IActionResult Add([FromBody] SaveEmployeeDto newEmployee)
         {
+            var newUser = new User
+            {
+                UserName = $"{newEmployee.Name}_HR",
+                HashedPassword = BCrypt.Net.BCrypt.HashPassword($"{newEmployee.Name}@123"),
+                IsAdmin = false
+            };
+            _dbContext.Add(newUser);
+
             _dbContext.Employees.Add(new ()
             {
                 Name = newEmployee.Name,
                 Phone = newEmployee.Phone,
-                Position = newEmployee.Position,
                 BirthDate = newEmployee.BirthDate,
                 IsActive = newEmployee.IsActive,
                 StartDate = newEmployee.StartDate,
                 EndDate = newEmployee.EndDate,
                 DepartmentId = newEmployee.DepartmentId,
                 ManagerId = newEmployee.ManagerId,
+                User = newUser // EF will automatically reference the UserId in the new User record above
             });
-            _dbContext.SaveChanges(); //It won't save the added changes unless this method is called
+            _dbContext.SaveChanges(); // It won't save the added changes unless this method is called
 
             return Created();
         }
@@ -118,7 +130,6 @@ namespace HR.Controllers
             targetEmployee.Name = updateEmployee.Name;
             targetEmployee.Phone = updateEmployee.Phone;
             targetEmployee.BirthDate = updateEmployee.BirthDate;
-            targetEmployee.Position = updateEmployee.Position;
             targetEmployee.IsActive = updateEmployee.IsActive;
             targetEmployee.StartDate = updateEmployee.StartDate;
             targetEmployee.EndDate = updateEmployee.EndDate;
