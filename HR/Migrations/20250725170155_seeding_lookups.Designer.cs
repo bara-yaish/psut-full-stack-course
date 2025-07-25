@@ -4,6 +4,7 @@ using HR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    partial class HrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725170155_seeding_lookups")]
+    partial class seeding_lookups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,12 +45,7 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<long?>("TypeId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TypeId");
 
                     b.ToTable("Departments");
                 });
@@ -84,8 +82,10 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<long?>("PositionId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -98,8 +98,6 @@ namespace HR.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("ManagerId");
-
-                    b.HasIndex("PositionId");
 
                     b.HasIndex("UserId");
 
@@ -211,15 +209,6 @@ namespace HR.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("HR.Models.Department", b =>
-                {
-                    b.HasOne("HR.Models.Lookup", "Lookup")
-                        .WithMany()
-                        .HasForeignKey("TypeId");
-
-                    b.Navigation("Lookup");
-                });
-
             modelBuilder.Entity("HR.Models.Employee", b =>
                 {
                     b.HasOne("HR.Models.Department", "Department")
@@ -230,17 +219,11 @@ namespace HR.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerId");
 
-                    b.HasOne("HR.Models.Lookup", "Lookup")
-                        .WithMany()
-                        .HasForeignKey("PositionId");
-
                     b.HasOne("HR.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Department");
-
-                    b.Navigation("Lookup");
 
                     b.Navigation("Manager");
 
