@@ -38,7 +38,8 @@ namespace HR.Controllers
                             where
                                 (filters.PositionId == null || employee.PositionId == filters.PositionId) &&
                                 (string.IsNullOrWhiteSpace(filters.Name) || employee.Name.ToLower().Contains(filters.Name.ToLower())) &&
-                                (filters.IsActive || employee.IsActive == filters.IsActive)
+                                (filters.PositionId == null || employee.PositionId == filters.PositionId) &&
+                                (filters.IsActive == null || employee.IsActive == filters.IsActive)
                             orderby
                                 employee.Id
                             select
@@ -46,8 +47,9 @@ namespace HR.Controllers
                                 {
                                     Id = employee.Id,
                                     Name = employee.Name,
+                                    PositionId = employee.PositionId,
+                                    PositionName = lookup.Name,
                                     BirthDate = employee.BirthDate,
-                                    Position = lookup.Name,
                                     IsActive = employee.IsActive,
                                     StartDate = employee.StartDate,
                                     Phone = employee.Phone,
@@ -70,11 +72,13 @@ namespace HR.Controllers
                     Id = employee.Id,
                     Name = employee.Name,
                     BirthDate = employee.BirthDate,
+                    PositionId = employee.PositionId,
+                    PositionName = employee.Lookup.Name,
                     IsActive = employee.IsActive,
                     StartDate = employee.StartDate,
                     Phone = employee.Phone,
                     ManagerId = employee.ManagerId,
-                    ManagerName= employee.Manager.Name,
+                    ManagerName = employee.Manager.Name,
                     DepartmentId = employee.DepartmentId,
                     DepartmentName = employee.Department.Name
                 })
@@ -102,8 +106,8 @@ namespace HR.Controllers
             _dbContext.Employees.Add(new ()
             {
                 Name = newEmployee.Name,
-                Phone = newEmployee.Phone,
                 BirthDate = newEmployee.BirthDate,
+                PositionId = newEmployee.PositionId,
                 IsActive = newEmployee.IsActive,
                 StartDate = newEmployee.StartDate,
                 EndDate = newEmployee.EndDate,
@@ -128,8 +132,8 @@ namespace HR.Controllers
             }
 
             targetEmployee.Name = updateEmployee.Name;
-            targetEmployee.Phone = updateEmployee.Phone;
             targetEmployee.BirthDate = updateEmployee.BirthDate;
+            targetEmployee.PositionId = updateEmployee.PositionId;
             targetEmployee.IsActive = updateEmployee.IsActive;
             targetEmployee.StartDate = updateEmployee.StartDate;
             targetEmployee.EndDate = updateEmployee.EndDate;

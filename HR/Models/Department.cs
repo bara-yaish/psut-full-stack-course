@@ -11,6 +11,7 @@ namespace HR.Models
         public string Description { get; set; }
         public int? FloorNumber { get; set; }
 
+        // FOREIGN KEYS
         [ForeignKey("Lookup")]
         public long? TypeId { get; set; }
         public Lookup? Lookup { get; set; }
