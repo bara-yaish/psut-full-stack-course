@@ -52,7 +52,12 @@ namespace HR
                     new Lookup { Id = -5, MajorCode = 1, MinorCode = 0, Name = "Department Types" },
                     new Lookup { Id = -6, MajorCode = 1, MinorCode = 1, Name = "Finance" },
                     new Lookup { Id = -7, MajorCode = 1, MinorCode = 2, Name = "Adminstrative" },
-                    new Lookup { Id = -8, MajorCode = 1, MinorCode = 3, Name = "Technical" }
+                    new Lookup { Id = -8, MajorCode = 1, MinorCode = 3, Name = "Technical" },
+
+                    new Lookup { Id = -9, MajorCode = 2, MinorCode = 0, Name = "Vacation Types" },
+                    new Lookup { Id = -10, MajorCode = 2, MinorCode = 1, Name = "Annual Vacation" },
+                    new Lookup { Id = -11, MajorCode = 2, MinorCode = 2, Name = "Sick Vacation" },
+                    new Lookup { Id = -12, MajorCode = 2, MinorCode = 3, Name = "Unpaid Vacation" }
                 );
 
             // An Admin user seed to access and test the APIs
@@ -63,6 +68,24 @@ namespace HR
                     // We cannot use the BCrypt hashing method every time we need to seed, because it will change its value and EF does not allow that
                     // In order to fix this, we hash the password once, then copy its hashed password string and use it for seeding everytime
                     new User { Id = 1, UserName = "Admin", HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym", IsAdmin = true }
+                );
+
+            // Seeding Departments data
+            modelBuilder
+                .Entity<Department>()
+                .HasData
+                (
+                    new Department { Id = 1, Name = "IT", Description = "IT Department", FloorNumber = 1, TypeId = -8 }, 
+                    new Department { Id = 2, Name = "HR", Description = "HR Department", FloorNumber = 2, TypeId = -7 }
+                );
+
+            // Seeding Employees data
+            modelBuilder
+                .Entity<Employee>()
+                .HasData
+                (
+                    new Employee { Id = 1, Name = "manager", IsActive = true, StartDate = new DateTime(2025, 07, 01), DepartmentId = 1, PositionId = -3 },
+                    new Employee { Id = 2, Name = "employee", IsActive = true, StartDate = new DateTime(2025, 07, 15), DepartmentId = 1, PositionId = -4 }
                 );
         }        
 
@@ -77,5 +100,6 @@ namespace HR
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
     }
 }
