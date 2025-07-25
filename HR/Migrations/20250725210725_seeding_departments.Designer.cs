@@ -4,6 +4,7 @@ using HR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    partial class HrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725210725_seeding_departments")]
+    partial class seeding_departments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace HR.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
 
                     b.HasData(
                         new
@@ -121,27 +124,7 @@ namespace HR.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Employees", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            DepartmentId = 1L,
-                            IsActive = true,
-                            Name = "manager",
-                            PositionId = -3L,
-                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            DepartmentId = 1L,
-                            IsActive = true,
-                            Name = "employee",
-                            PositionId = -4L,
-                            StartDate = new DateTime(2025, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("HR.Models.Lookup", b =>
@@ -164,7 +147,7 @@ namespace HR.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookups", (string)null);
+                    b.ToTable("Lookups");
 
                     b.HasData(
                         new
@@ -274,7 +257,7 @@ namespace HR.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -318,7 +301,7 @@ namespace HR.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("Vacations", (string)null);
+                    b.ToTable("Vacations");
                 });
 
             modelBuilder.Entity("HR.Models.Department", b =>
