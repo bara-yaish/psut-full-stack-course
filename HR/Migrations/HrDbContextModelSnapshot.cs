@@ -176,7 +176,7 @@ namespace HR.Migrations
                             Id = -7L,
                             MajorCode = 1,
                             MinorCode = 2,
-                            Name = "Administrative"
+                            Name = "Adminstrative"
                         },
                         new
                         {
@@ -209,6 +209,15 @@ namespace HR.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            IsAdmin = true,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("HR.Models.Department", b =>

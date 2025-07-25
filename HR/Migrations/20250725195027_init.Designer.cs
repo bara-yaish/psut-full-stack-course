@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    [Migration("20250725170155_seeding_lookups")]
-    partial class seeding_lookups
+    [Migration("20250725195027_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,7 +45,12 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long?>("TypeId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Departments");
                 });
@@ -82,10 +87,8 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<long?>("PositionId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -98,6 +101,8 @@ namespace HR.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("ManagerId");
+
+                    b.HasIndex("PositionId");
 
                     b.HasIndex("UserId");
 
@@ -174,7 +179,7 @@ namespace HR.Migrations
                             Id = -7L,
                             MajorCode = 1,
                             MinorCode = 2,
-                            Name = "Administrative"
+                            Name = "Adminstrative"
                         },
                         new
                         {
@@ -207,6 +212,24 @@ namespace HR.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            IsAdmin = true,
+                            UserName = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("HR.Models.Department", b =>
+                {
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
+                    b.Navigation("Lookup");
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>
@@ -219,11 +242,17 @@ namespace HR.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerId");
 
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
+
                     b.HasOne("HR.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Lookup");
 
                     b.Navigation("Manager");
 
