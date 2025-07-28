@@ -20,11 +20,11 @@ namespace HR.Controllers
                 _dbContext.Vacations
                 .AsNoTracking()
                 .Where(x => x.TypeId == filters.VacationTypeId || filters.VacationTypeId == null)
-                .Where(x => x.EmplopyeeId == filters.EmployeeId || filters.EmployeeId == null)
+                .Where(x => x.EmployeeId == filters.EmployeeId || filters.EmployeeId == null)
                 .Select(x => new VacationDto
                 {
                     Id = x.Id,
-                    EmployeeId = x.EmplopyeeId,
+                    EmployeeId = x.EmployeeId,
                     EmployeeName = x.Employee.Name,
                     CreationDate = x.CreationDate,
                     StartDate = x.StartDate,
@@ -44,7 +44,7 @@ namespace HR.Controllers
                 .Select(x => new VacationDto
                 {
                     Id = x.Id,
-                    EmployeeId = x.EmplopyeeId,
+                    EmployeeId = x.EmployeeId,
                     EmployeeName = x.Employee.Name,
                     CreationDate = x.CreationDate,
                     StartDate = x.StartDate,
@@ -60,7 +60,7 @@ namespace HR.Controllers
 
             return Ok(vacation);
         }
-
+        
         [HttpPost]
         public IActionResult Add([FromBody] SaveVacationDto newVacation)
         {
@@ -72,7 +72,7 @@ namespace HR.Controllers
                     StartDate = newVacation.StartDate,
                     EndDate = newVacation.EndDate,
                     Notes = newVacation.Notes,
-                    EmplopyeeId = newVacation.EmployeeId,
+                    EmployeeId = newVacation.EmployeeId,
                     TypeId = newVacation.TypeId,
                 });
                 _dbContext.SaveChanges();
@@ -97,7 +97,7 @@ namespace HR.Controllers
                 targetVacation.StartDate = updateVacation.StartDate;
                 targetVacation.EndDate = updateVacation.EndDate;
                 targetVacation.Notes = updateVacation.Notes;
-                targetVacation.EmplopyeeId = updateVacation.EmployeeId;
+                targetVacation.EmployeeId = updateVacation.EmployeeId;
                 targetVacation.TypeId = updateVacation.TypeId;
 
                 _dbContext.SaveChanges();

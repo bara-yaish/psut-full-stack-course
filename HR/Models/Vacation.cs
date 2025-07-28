@@ -10,7 +10,7 @@ namespace HR.Models
         public DateTime EndDate { get; set; }
         public string? Notes { get; set; }
         [ForeignKey("Employee")]
-        public long EmplopyeeId { get; set; }
+        public long EmployeeId { get; set; }
         public Employee Employee { get; set; }
         [ForeignKey("Lookup")]
         public long TypeId { get; set; }
