@@ -3,6 +3,7 @@ using HR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace HR.Controllers
 {
@@ -90,6 +91,49 @@ namespace HR.Controllers
             }
 
             return Ok(employee);
+        }
+        [HttpGet("VacationsCount")]
+        public IActionResult GetVacationCount()
+        {
+            /*
+             * SELECT
+	         *      T1.Id AS EmployeeId,
+	         *      T1.[Name] AS EmployeeName,
+	         *      COUNT(T2.Id) AS VacationsCount
+             *  FROM
+	         *      Employees T1
+	         *      LEFT JOIN Vacations T2 ON T1.Id = T2.EmplopyeeId
+             *  GROUP BY
+	         *      T1.Id,
+	         *      T1.[Name]
+             */
+
+            //return Ok(
+            //    from employee in _dbContext.Employees.AsNoTracking()
+            //    from vacation in _dbContext.Vacations.AsNoTracking().Where(x => x.EmployeeId == employee.Id).DefaultIfEmpty()
+            //    group new { Employee = employee, Vacation = vacation } by new { employee.Id, Name = employee.Name } into vacationsCount
+            //    select new EmployeeVacationsCountDto
+            //    {
+            //        EmployeeId = vacationsCount.Key.Id,
+            //        EmployeeName = vacationsCount.Key.Name,
+            //        VacationsCount = vacationsCount.ToList().Count(x => x.Vacation != null)
+            //    });
+
+            return Ok(_dbContext.Employees                                  // FROM Employees
+                .AsNoTracking()
+                // GroupJoin automatically groups by all
+                // of the selected fields
+                .GroupJoin(                                                 // LEFT JOIN
+                    _dbContext.Vacations,                                   // Vacations ON
+                    employee => employee.Id,                                // Employees.Id =
+                    vacation => vacation.EmployeeId,                        // Vacations.EmployeeId
+                    (employee, vacation) => new EmployeeVacationsCountDto   // SELECT
+                    {
+                        EmployeeId = employee.Id,                           // Employees.Id AS EmployeeId
+                        EmployeeName = employee.Name,                       // Employees.Name AS EmployeeName
+                        VacationsCount = vacation.Count()                   // COUNT(Vacations.Id)
+                    })
+                .ToList());
         }
 
         [HttpPost("Add")]
