@@ -87,6 +87,16 @@ namespace HR
                     new Employee { Id = 1, Name = "manager", IsActive = true, StartDate = new DateTime(2025, 07, 01), DepartmentId = 1, PositionId = -3 },
                     new Employee { Id = 2, Name = "employee", IsActive = true, StartDate = new DateTime(2025, 07, 15), DepartmentId = 1, PositionId = -4 }
                 );
+
+            modelBuilder
+                .Entity<User>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
+
+            modelBuilder
+                .Entity<Employee>()
+                .HasIndex(x => x.UserId)
+                .IsUnique();
         }        
 
         //----------------------------------------------------------------------
