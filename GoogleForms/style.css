@@ -1,0 +1,132 @@
+html {
+    background-color: #efeaf7;
+    font-family: sans-serif;
+    font-size: 14px;
+    margin: 1% 22%;
+}
+
+.header {
+    background-color: #ffffff;
+    padding: 1% 4% 2%;
+    border-radius: 10px;
+    border: 1px solid #d3d3d3;
+    border-top: 9px solid #673ab6;
+}
+
+.account-email {
+    font-weight: 600;
+    color: #6a6a6a;
+}
+
+.warning,
+.required-icon {
+    color: #d10000;
+}
+
+.account-email,
+.switch-account,
+.icon,
+.description,
+.warning {
+    font-size: 0.9rem;
+}
+
+.icon {
+    cursor: pointer;
+}
+
+.account {
+    display: flex;
+}
+
+.switch-account {
+    flex-grow: 1;
+    padding-left: 2%;
+}
+
+.question {
+    background-color: #ffffff;
+    padding: 2% 4% 2%;
+    border-radius: 10px;
+    border: 1px solid #d3d3d3;
+    margin-top: 1%;
+}
+
+.title {
+    font-size: 1.3rem;
+    padding-bottom: 1%;
+}
+
+input,
+select {
+    padding: 1% 2%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+input::placeholder,
+select::placeholder {
+    font-size: 0.7em;
+}
+
+.action {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1%;
+}
+
+.button {
+    padding: 1.5% 2.5%;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.submit {
+    background-color: #673ab6;
+    color: white;
+}
+
+.reset {
+    background-color: unset;
+    color: #673ab6;
+}
+
+.reset:hover {
+    background-color: #eae7f8;
+}
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1%;
+}
+
+.copy-right {
+    font-size: 0.9rem;
+    color: #747474;
+}
+
+.logo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #4c4c4c;
+}
+
+@media (max-width: 600px) {
+    html {
+        font-size: 12px;
+        margin: 1% 4%;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 4% 5%;
+    }
+}
