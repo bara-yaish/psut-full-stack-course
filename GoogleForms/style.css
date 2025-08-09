@@ -118,6 +118,10 @@ select::placeholder {
     color: #4c4c4c;
 }
 
+.required-input-warning {
+    border-color: #d10000;
+}
+
 @media (max-width: 600px) {
     html {
         font-size: 12px;
