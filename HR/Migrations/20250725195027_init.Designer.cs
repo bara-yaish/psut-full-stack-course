@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    [Migration("20250716190759_fix_userid_foreign_key_error")]
-    partial class fix_userid_foreign_key_error
+    [Migration("20250725195027_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,7 +45,12 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long?>("TypeId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TypeId");
 
                     b.ToTable("Departments");
                 });
@@ -82,10 +87,8 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<long?>("PositionId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -99,9 +102,92 @@ namespace HR.Migrations
 
                     b.HasIndex("ManagerId");
 
+                    b.HasIndex("PositionId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("HR.Models.Lookup", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("MajorCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinorCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Lookups");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1L,
+                            MajorCode = 0,
+                            MinorCode = 0,
+                            Name = "Employee Positions"
+                        },
+                        new
+                        {
+                            Id = -2L,
+                            MajorCode = 0,
+                            MinorCode = 1,
+                            Name = "HR"
+                        },
+                        new
+                        {
+                            Id = -3L,
+                            MajorCode = 0,
+                            MinorCode = 2,
+                            Name = "Manager"
+                        },
+                        new
+                        {
+                            Id = -4L,
+                            MajorCode = 0,
+                            MinorCode = 3,
+                            Name = "Developer"
+                        },
+                        new
+                        {
+                            Id = -5L,
+                            MajorCode = 1,
+                            MinorCode = 0,
+                            Name = "Department Types"
+                        },
+                        new
+                        {
+                            Id = -6L,
+                            MajorCode = 1,
+                            MinorCode = 1,
+                            Name = "Finance"
+                        },
+                        new
+                        {
+                            Id = -7L,
+                            MajorCode = 1,
+                            MinorCode = 2,
+                            Name = "Adminstrative"
+                        },
+                        new
+                        {
+                            Id = -8L,
+                            MajorCode = 1,
+                            MinorCode = 3,
+                            Name = "Technical"
+                        });
                 });
 
             modelBuilder.Entity("HR.Models.User", b =>
@@ -126,6 +212,24 @@ namespace HR.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            IsAdmin = true,
+                            UserName = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("HR.Models.Department", b =>
+                {
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
+                    b.Navigation("Lookup");
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>
@@ -138,11 +242,17 @@ namespace HR.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerId");
 
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
+
                     b.HasOne("HR.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Department");
+
+                    b.Navigation("Lookup");
 
                     b.Navigation("Manager");
 

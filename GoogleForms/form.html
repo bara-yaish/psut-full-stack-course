@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- Root Element -->
+<html>
+
+<head>
+    <title>Google Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <h2> Select And Submit To Join One Of Our Courses</h2>
+        <div class="content">
+            <div class="account">
+                <span class="account-email">yo.mama@gmail.com</span>
+                <span class="switch-account">
+                    <a href="https://myaccount.google.com/" target="_blank">Switch Account</a>
+                </span>
+                <span class="icon">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </span>
+            </div>
+            <p class="description">The name, email address and photo associated with your Google Account will be recorded when you upload files and submit this form</p>
+            <p class="warning">* Indicates required question</p>
+        </div>
+    </div>
+    <form>
+        <div class="question">
+            <div class="title">
+                <label for="email">
+                    Email<span class="required-icon">*</span>
+                </label>
+            </div>
+            <div class="question-input">
+                <input id="email" type="email" placeholder="Your Email Address" required>
+            </div>
+        </div>
+        <div class="question">
+            <div class="title">
+                <label for="name">
+                    Name<span class="required-icon">*</span>
+                </label>
+            </div>
+            <div class="question-input">
+                <input id="name" type="text" placeholder="Your Name" required>
+            </div>
+        </div>
+        <div class="question">
+            <div class="title">
+                <label for="number">
+                    Phone Number<span class="required-icon">*</span>
+                </label>
+            </div>
+            <div class="question-input">
+                <input id="number" type="text" placeholder="Your Phone Number" required>
+            </div>
+        </div>
+        <div class="question">
+            <div class="title">
+                <label for="course">
+                    Course<span class="required-icon">*</span>
+                </label>
+            </div>
+            <div class="question-input">
+                <select id="course">
+                    <option value="1">Asp.net</option>
+                    <option value="2">Angular</option>
+                    <option value="3">Python</option>
+                </select>
+            </div>
+        </div>
+        <div class="action">
+            <button type="Submit" class="submit button">Submit</button>
+            <button type="Reset" class="reset button">Clear Form</button>
+        </div>
+    </form>
+    <div class="footer">
+        <p class="copy-right">This form was created inside Princess Sumaya University for
+            Technology.
+            Does this form look suspicious?
+            <a href="">Report</a>
+        </p>
+        <p class="logo">Google Forms</p>
+    </div>
+
+</body>
+
+</html>

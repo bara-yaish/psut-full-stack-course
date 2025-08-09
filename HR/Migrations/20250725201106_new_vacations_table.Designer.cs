@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    [Migration("20250725175048_foreign_keys_lookups")]
-    partial class foreign_keys_lookups
+    [Migration("20250725201106_new_vacations_table")]
+    partial class new_vacations_table
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -179,7 +179,7 @@ namespace HR.Migrations
                             Id = -7L,
                             MajorCode = 1,
                             MinorCode = 2,
-                            Name = "Administrative"
+                            Name = "Adminstrative"
                         },
                         new
                         {
@@ -212,6 +212,50 @@ namespace HR.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            IsAdmin = true,
+                            UserName = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("HR.Models.Vacations", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("EmplopyeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("TypeId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmplopyeeId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("Vacations");
                 });
 
             modelBuilder.Entity("HR.Models.Department", b =>
@@ -248,6 +292,25 @@ namespace HR.Migrations
                     b.Navigation("Manager");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HR.Models.Vacations", b =>
+                {
+                    b.HasOne("HR.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmplopyeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Lookup");
                 });
 #pragma warning restore 612, 618
         }

@@ -32,34 +32,72 @@ namespace HR
         // DbContextOptions is a setup for two things:
         // 1. Type of the database.
         // 2. Connection to the database.
-        public HrDbContext(DbContextOptions<HrDbContext> options) : base(options) {}
+        public HrDbContext(DbContextOptions<HrDbContext> options) : base(options) { }
 
-        // Used to create foreign keys, set max length, seeding, and more
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder); // We call the Parent Method to execute stuff that won't be executed if it was overridden
+            base.OnModelCreating(modelBuilder);
 
-            // Create seeding for the entity Lookup
-            // Employees Table = 0
-            // Departments Table = 1
-            // Using negative Ids help distinguish between database-created records, and user-created records.
-            // Plus its best practice.
             modelBuilder
                 .Entity<Lookup>()
-                .HasData(
-                    // Employee Positions
-                    new Lookup() { Id = -1, MajorCode = 0, MinorCode = 0, Name = "Employee Positions" }, // This is like the label of the drop-list
-                    new Lookup() { Id = -2, MajorCode = 0, MinorCode = 1, Name = "HR" },
-                    new Lookup() { Id = -3, MajorCode = 0, MinorCode = 2, Name = "Manager" },
-                    new Lookup() { Id = -4, MajorCode = 0, MinorCode = 3, Name = "Developer" },
+                .HasData
+                (
+                    // Employee Positions (Major Code = 0)
+                    new Lookup { Id = -1, MajorCode = 0, MinorCode = 0, Name = "Employee Positions" },
+                    new Lookup { Id = -2, MajorCode = 0, MinorCode = 1, Name = "HR" },
+                    new Lookup { Id = -3, MajorCode = 0, MinorCode = 2, Name = "Manager" },
+                    new Lookup { Id = -4, MajorCode = 0, MinorCode = 3, Name = "Developer" },
+                                      
+                    // Department Types (Major Code = 1)
+                    new Lookup { Id = -5, MajorCode = 1, MinorCode = 0, Name = "Department Types" },
+                    new Lookup { Id = -6, MajorCode = 1, MinorCode = 1, Name = "Finance" },
+                    new Lookup { Id = -7, MajorCode = 1, MinorCode = 2, Name = "Adminstrative" },
+                    new Lookup { Id = -8, MajorCode = 1, MinorCode = 3, Name = "Technical" },
 
-                    // Department Types
-                    new Lookup() { Id = -5, MajorCode = 1, MinorCode = 0, Name = "Department Types" }, // This is like the label of the drop-list
-                    new Lookup() { Id = -6, MajorCode = 1, MinorCode = 1, Name = "Finance" },
-                    new Lookup() { Id = -7, MajorCode = 1, MinorCode = 2, Name = "Administrative" },
-                    new Lookup() { Id = -8, MajorCode = 1, MinorCode = 3, Name = "Technical" }
+                    new Lookup { Id = -9, MajorCode = 2, MinorCode = 0, Name = "Vacation Types" },
+                    new Lookup { Id = -10, MajorCode = 2, MinorCode = 1, Name = "Annual Vacation" },
+                    new Lookup { Id = -11, MajorCode = 2, MinorCode = 2, Name = "Sick Vacation" },
+                    new Lookup { Id = -12, MajorCode = 2, MinorCode = 3, Name = "Unpaid Vacation" }
                 );
-        }
+
+            // An Admin user seed to access and test the APIs
+            modelBuilder
+                .Entity<User>()
+                .HasData
+                (
+                    // We cannot use the BCrypt hashing method every time we need to seed, because it will change its value and EF does not allow that
+                    // In order to fix this, we hash the password once, then copy its hashed password string and use it for seeding everytime
+                    new User { Id = 1, UserName = "Admin", HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym", IsAdmin = true }
+                );
+
+            // Seeding Departments data
+            modelBuilder
+                .Entity<Department>()
+                .HasData
+                (
+                    new Department { Id = 1, Name = "IT", Description = "IT Department", FloorNumber = 1, TypeId = -8 }, 
+                    new Department { Id = 2, Name = "HR", Description = "HR Department", FloorNumber = 2, TypeId = -7 }
+                );
+
+            // Seeding Employees data
+            modelBuilder
+                .Entity<Employee>()
+                .HasData
+                (
+                    new Employee { Id = 1, Name = "manager", IsActive = true, StartDate = new DateTime(2025, 07, 01), DepartmentId = 1, PositionId = -3 },
+                    new Employee { Id = 2, Name = "employee", IsActive = true, StartDate = new DateTime(2025, 07, 15), DepartmentId = 1, PositionId = -4 }
+                );
+
+            modelBuilder
+                .Entity<User>()
+                .HasIndex(x => x.UserName)
+                .IsUnique();
+
+            modelBuilder
+                .Entity<Employee>()
+                .HasIndex(x => x.UserId)
+                .IsUnique();
+        }        
 
         //----------------------------------------------------------------------
         // The following is the section where we define the tables represented
@@ -72,5 +110,6 @@ namespace HR
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
     }
 }

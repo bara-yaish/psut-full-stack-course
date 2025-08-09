@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    [Migration("20250725170155_seeding_lookups")]
-    partial class seeding_lookups
+    [Migration("20250725211054_seeding_employees")]
+    partial class seeding_employees
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,9 +45,32 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<long?>("TypeId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("TypeId");
+
                     b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Description = "IT Department",
+                            FloorNumber = 1,
+                            Name = "IT",
+                            TypeId = -8L
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            Description = "HR Department",
+                            FloorNumber = 2,
+                            Name = "HR",
+                            TypeId = -7L
+                        });
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>
@@ -82,10 +105,8 @@ namespace HR.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Position")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<long?>("PositionId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -99,9 +120,31 @@ namespace HR.Migrations
 
                     b.HasIndex("ManagerId");
 
+                    b.HasIndex("PositionId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            DepartmentId = 1L,
+                            IsActive = true,
+                            Name = "manager",
+                            PositionId = -3L,
+                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2L,
+                            DepartmentId = 1L,
+                            IsActive = true,
+                            Name = "employee",
+                            PositionId = -4L,
+                            StartDate = new DateTime(2025, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("HR.Models.Lookup", b =>
@@ -174,7 +217,7 @@ namespace HR.Migrations
                             Id = -7L,
                             MajorCode = 1,
                             MinorCode = 2,
-                            Name = "Administrative"
+                            Name = "Adminstrative"
                         },
                         new
                         {
@@ -182,6 +225,34 @@ namespace HR.Migrations
                             MajorCode = 1,
                             MinorCode = 3,
                             Name = "Technical"
+                        },
+                        new
+                        {
+                            Id = -9L,
+                            MajorCode = 2,
+                            MinorCode = 0,
+                            Name = "Vacation Types"
+                        },
+                        new
+                        {
+                            Id = -10L,
+                            MajorCode = 2,
+                            MinorCode = 1,
+                            Name = "Annual Vacation"
+                        },
+                        new
+                        {
+                            Id = -11L,
+                            MajorCode = 2,
+                            MinorCode = 2,
+                            Name = "Sick Vacation"
+                        },
+                        new
+                        {
+                            Id = -12L,
+                            MajorCode = 2,
+                            MinorCode = 3,
+                            Name = "Unpaid Vacation"
                         });
                 });
 
@@ -207,6 +278,59 @@ namespace HR.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            HashedPassword = "$2a$11$MVRXCTLgV2dEBLH931VhPOUHtGqqfZ.006p2emcvtxwyRAT90ngym",
+                            IsAdmin = true,
+                            UserName = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("HR.Models.Vacations", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("EmplopyeeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long>("TypeId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmplopyeeId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("Vacations");
+                });
+
+            modelBuilder.Entity("HR.Models.Department", b =>
+                {
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId");
+
+                    b.Navigation("Lookup");
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>
@@ -219,15 +343,40 @@ namespace HR.Migrations
                         .WithMany()
                         .HasForeignKey("ManagerId");
 
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("PositionId");
+
                     b.HasOne("HR.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Department");
 
+                    b.Navigation("Lookup");
+
                     b.Navigation("Manager");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HR.Models.Vacations", b =>
+                {
+                    b.HasOne("HR.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmplopyeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HR.Models.Lookup", "Lookup")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Lookup");
                 });
 #pragma warning restore 612, 618
         }

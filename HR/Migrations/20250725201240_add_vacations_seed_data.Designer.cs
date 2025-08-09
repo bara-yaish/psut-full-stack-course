@@ -4,6 +4,7 @@ using HR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HrDbContext))]
-    partial class HrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725201240_add_vacations_seed_data")]
+    partial class add_vacations_seed_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,24 +53,6 @@ namespace HR.Migrations
                     b.HasIndex("TypeId");
 
                     b.ToTable("Departments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Description = "IT Department",
-                            FloorNumber = 1,
-                            Name = "IT",
-                            TypeId = -8L
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Description = "HR Department",
-                            FloorNumber = 2,
-                            Name = "HR",
-                            TypeId = -7L
-                        });
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>
@@ -119,31 +104,9 @@ namespace HR.Migrations
 
                     b.HasIndex("PositionId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Employees");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            DepartmentId = 1L,
-                            IsActive = true,
-                            Name = "manager",
-                            PositionId = -3L,
-                            StartDate = new DateTime(2025, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            DepartmentId = 1L,
-                            IsActive = true,
-                            Name = "employee",
-                            PositionId = -4L,
-                            StartDate = new DateTime(2025, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
                 });
 
             modelBuilder.Entity("HR.Models.Lookup", b =>
@@ -272,12 +235,9 @@ namespace HR.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserName")
-                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -291,7 +251,7 @@ namespace HR.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HR.Models.Vacation", b =>
+            modelBuilder.Entity("HR.Models.Vacations", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -302,7 +262,7 @@ namespace HR.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<long>("EmployeeId")
+                    b.Property<long>("EmplopyeeId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("EndDate")
@@ -319,7 +279,7 @@ namespace HR.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
+                    b.HasIndex("EmplopyeeId");
 
                     b.HasIndex("TypeId");
 
@@ -362,11 +322,11 @@ namespace HR.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HR.Models.Vacation", b =>
+            modelBuilder.Entity("HR.Models.Vacations", b =>
                 {
                     b.HasOne("HR.Models.Employee", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeId")
+                        .HasForeignKey("EmplopyeeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
