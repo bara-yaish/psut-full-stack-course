@@ -82,4 +82,18 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  let images = [
+    "https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-fall-nature-scenery-free-image.jpeg?w=2210&quality=70",
+    "https://t3.ftcdn.net/jpg/02/70/35/00/360_F_270350073_WO6yQAdptEnAhYKM5GuA9035wbRnVJSr.jpg",
+    "https://images.pexels.com/photos/26151151/pexels-photo-26151151/free-photo-of-night-sky-filled-with-stars-reflecting-in-the-lake.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+  ];
+
+  let currentIndex = 0;
+  let imageElement = document.getElementById("image");
+  updateImage();
+
+  function updateImage() {
+    imageElement.setAttribute("src", images[currentIndex]);
+  }
 });
