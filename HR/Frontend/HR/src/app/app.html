@@ -128,18 +128,28 @@
       <label for="email"> Email<span class="required-icon">*</span> </label>
     </div>
     <div class="question-input">
-      <input id="email" type="email" placeholder="Your Email Address" formControlName="email"
+      <input 
+        id="email" 
+        type="email" 
+        placeholder="Your Email Address" 
+        formControlName="email"
         [class.required-input-warning]="
-          form.get('email')?.invalid && form.get('email')?.touched
-        " />
-      @if (form.get('email')?.invalid && form.get('email')?.touched) {
-      @if (form.get('email')?.errors?.['required']) {
-      <div class="invalid-input-message">* Email is required</div>
-      }
+          form.get('email')?.invalid 
+          && form.get('email')?.touched
+        " 
+      />
 
-      @if (form.get('email')?.errors?.['email']) {
-      <div class="invalid-input-message">* Invalid email</div>
-      }
+      @if (form.get('email')?.invalid && form.get('email')?.touched) 
+      {
+        @if (form.get('email')?.errors?.['required']) 
+        {
+          <div class="invalid-input-message">* Email is required</div>
+        }
+
+        @if (form.get('email')?.errors?.['email']) 
+        {
+          <div class="invalid-input-message">* Invalid email</div>
+        }
       }
     </div>
   </div>
@@ -149,9 +159,24 @@
       <label for="name"> Name<span class="required-icon">*</span> </label>
     </div>
     <div class="question-input">
-      <input id="name" type="text" placeholder="Your Name" formControlName="name" [class.required-input-warning]="
-          form.get('name')?.invalid && form.get('name')?.touched
-        " />
+      <input 
+        id="name" 
+        type="text" 
+        placeholder="Your Name" 
+        formControlName="name" 
+        [class.required-input-warning]="
+          form.get('name')?.invalid 
+          && form.get('name')?.touched
+        " 
+      />
+
+      @if (form.get('name')?.invalid && form.get('name')?.touched) 
+      {
+        @if (form.get('name')?.errors?.['required']) 
+        {
+          <div class="invalid-input-message">* Name is required</div>
+        }
+      }
     </div>
   </div>
 
@@ -162,33 +187,77 @@
       </label>
     </div>
     <div class="question-input">
-      <input id="number" type="text" placeholder="Your Phone Number" formControlName="phone"
+      <input 
+        id="number" 
+        type="text" 
+        placeholder="Your Phone Number" 
+        formControlName="phone"
         [class.required-input-warning]="
-          form.get('phone')?.invalid && form.get('phone')?.touched
-        " />
+          form.get('phone')?.invalid 
+          && form.get('phone')?.touched
+        " 
+      />
+
+      @if (form.get('phone')?.invalid && form.get('phone')?.touched) 
+      {
+        @if (form.get('phone')?.errors?.['required']) 
+        {
+          <div class="invalid-input-message">* Phone Number is required</div>
+        }
+        @else if (form.get('phone')?.errors?.['minlength']) {
+          <div class="invalid-input-message">* Phone number must be at least 9 digits</div>
+        }
+        @else if (form.get('phone')?.errors?.['maxlength']) {
+          <div class="invalid-input-message">* Phone number cannot be more than 10 digits</div>
+        }
+      }
     </div>
   </div>
 
   <div class="question">
     <div class="title">
-      <label for="course"> Course<span class="required-icon">*</span> </label>
+      <label for="course">Course<span class="required-icon">*</span> </label>
     </div>
     <div class="question-input">
-      <select id="course" formControlName="course" [class.required-input-warning]="
-          form.get('course')?.invalid && form.get('course')?.touched
-        ">
-        @for(course of courses; track course) {
-        <option [value]="course.id">{{ course.name }}</option>
+      <select 
+        id="course" 
+        formControlName="course" 
+        [class.required-input-warning]="
+          form.get('course')?.invalid 
+          && form.get('course')?.touched"
+      >
+        @for(course of courses; track course) 
+        {
+          <option [value]="course.id">{{ course.name }}</option>
         }
       </select>
+
+      @if (form.get('course')?.invalid && form.get('course')?.touched) 
+      {
+        @if (form.get('course')?.errors?.['required']) 
+        {
+          <div class="invalid-input-message">* Course is required</div>
+        }
+      }
     </div>
   </div>
 
   <div class="action">
-    <button type="button" class="submit button" [class.disabled-button]="!form.valid" [disabled]="!form.valid">
+    <button 
+      type="button" 
+      class="submit button" 
+      [class.disabled-button]=" !form.valid " 
+      [disabled]=" !form.valid "
+      (click)="submit()"
+    >
       Submit
     </button>
-    <button type="button" class="reset button" (click)="reset()">
+
+    <button 
+      type="button" 
+      class="reset button" 
+      (click)="reset()"
+    >
       Clear Form
     </button>
   </div>
@@ -200,4 +269,20 @@
     this form look suspicious? <a href>Report</a>
   </p>
   <p class="logo">Google Forms</p>
+</div>
+
+<div class="title">
+  Price: {{price | currency:'USD'}}
+</div>
+
+<div class="title">
+  Creation Date: {{creationDate | date:'yyyy-MM-dd hh:mm:ss a'}}
+</div>
+
+<div class="title">
+  Lower Case: {{'Angular' | lowercase | reverse}}
+</div>
+
+<div class="title">
+  Upper Case: {{'Angular' | uppercase}}
 </div>
