@@ -1,9 +1,8 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NgIf, NgFor, NgClass, NgStyle, CommonModule } from '@angular/common';
-import { RandomColor } from './directives/random-color';
+import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReversePipe } from './pipes/reverse-pipe';
+import { Employees } from './components/employees/employees';
 
 @Component({
   selector: 'app-root',
@@ -14,26 +13,33 @@ import { ReversePipe } from './pipes/reverse-pipe';
     // NgClass, 
     // NgStyle, 
     // RandomColor, 
-    FormsModule, 
+    FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    ReversePipe
-  ],
+    ReversePipe,
+    Employees
+],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  title = "Welcome to Angular from Typescript";
-  num: number = 52.165;
-  bool: boolean = true;
-  arr: string[] = ["one", "two", "three"]
+  
 
-  name = "Emp";
-  currentIndex = 0;
-  price = 2305.30;
-  creationDate = new Date();
 
-  students = [
+}
+
+function testingStuff() {
+  let title = "Welcome to Angular from Typescript";
+  let num: number = 52.165;
+  let bool: boolean = true;
+  let arr: string[] = ["one", "two", "three"]
+
+  let name = "Emp";
+  let currentIndex = 0;
+  let price = 2305.30;
+  let creationDate = new Date();
+
+  let students = [
     { name: "Bara", mark: 49 },
     { name: "Aya", mark: 56 },
     { name: "Omar", mark: 41 },
@@ -42,7 +48,7 @@ export class App {
     { name: "Anas", mark: 30 },
   ]
 
-  images = [
+  let images = [
     "https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-fall-nature-scenery-free-image.jpeg?w=2210&quality=70",
 
     "https://t3.ftcdn.net/jpg/02/70/35/00/360_F_270350073_WO6yQAdptEnAhYKM5GuA9035wbRnVJSr.jpg",
@@ -50,41 +56,41 @@ export class App {
     "https://images.pexels.com/photos/26151151/pexels-photo-26151151/free-photo-of-night-sky-filled-with-stars-reflecting-in-the-lake.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
   ];
 
-  courses = [
+  let courses = [
     { id: 1, name: 'ASP.NET' },
     { id: 2, name: 'Angular' },
     { id: 3, name: 'Java' },
     { id: 4, name: 'Python' },
   ]
 
-  form = new FormGroup({
+  let form = new FormGroup({
     name: new FormControl(null, Validators.required),
     email: new FormControl(null, [Validators.required, Validators.email]),
     phone: new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(10)]),
     course: new FormControl(1, Validators.required),
   });
 
-  next() {
-    if (this.currentIndex < this.images.length - 1) {
-      this.currentIndex++;
+  function next() {
+    if (currentIndex < images.length - 1) {
+      currentIndex++;
     }
   }
 
-  previous() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
+  function previous() {
+    if (currentIndex > 0) {
+      currentIndex--;
     }
   }
 
-  reset() {
-    this.form.reset({
+  function reset() {
+    form.reset({
       course: 1
     });
   }
 
-  submit() {
+  function submit() {
     alert(`
-      Welcome to the academy, ${this.form.value.name}!
-      We will contact you shortly about the ${this.courses.find( x => x.id == this.form.value.course)?.name} Course.`);
+      Welcome to the academy, ${form.value.name}!
+      We will contact you shortly about the ${courses.find( x => x.id == form.value.course)?.name} Course.`);
   }
 }
