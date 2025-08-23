@@ -1,7 +1,10 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h5>Filter</h5>
+            <h5>
+                <i class="bi bi-funnel-fill"></i>
+                <span>Filter</span>
+            </h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -43,8 +46,9 @@
             </div>
 
             <div class="text-end mt-2">
-                <button type="button" class="btn btn-secondary">
-                    Search
+                <button type="button" class="btn btn-outline-secondary">
+                    <i class="bi bi-search"></i>
+                    <span>Search</span>
                 </button>
             </div>
         </div>
@@ -57,8 +61,15 @@
             </div>
 
             <div class="text-end">
-                <button type="button" class="btn btn-secondary">
-                    Add
+                <button 
+                    type="button" 
+                    class="btn btn-outline-secondary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#saveEmployeeModal"
+                    (click)="clearEmployeeForm()"
+                >
+                    <i class="bi bi-person-plus-fill"></i> 
+                    <span>Add</span>
                 </button>
             </div>
         </div>
@@ -67,33 +78,125 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                        @for(col of employeesTableColumns; track col)
+                        {
+                            <th>{{col}}</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    </tr>
-                    <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
-                    </tr>
-                    <tr>
-                    <th scope="row">3</th>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>@social</td>
-                    </tr>
+                    @for (employee of employees; track employee; let i = $index) 
+                    {
+                        <tr>
+                            <td>{{i + 1}}</td>
+                            <td>{{employee.name}}</td>
+                            <td>{{employee.phone}}</td>
+                            <td>{{employee.birthDate | date:'dd/MM/yyyy'}}</td>
+                            @if (employee.isActive)
+                            {
+                                <td><span class="badge text-bg-success">Active</span></td>
+                            }
+                            @else 
+                            {
+                                <td><span class="badge text-bg-danger">Inactive</span></td>
+                            }
+                            <td>{{employee.startDate | date:'dd/MM/yyyy'}}</td>
+                            <td>{{employee.positionName}}</td>
+                            <td>{{employee.departmentName}}</td>
+                            <td>{{employee.managerName}}</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#saveEmployeeModal" (click)="editEmployee(employee.id)">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
+</div>
+
+<div class="modal modal-lg fade" id="saveEmployeeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Save Employee</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="employeeForm">
+            <div class="row align-end">
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="nameControl" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="nameControl" formControlName="Name" placeholder="Name">
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="phoneControl" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phoneControl" formControlName="Phone" placeholder="Phone">
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="startDateControl" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="startDateControl" formControlName="StartDate" placeholder="Employee Name">
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="birthDateControl" class="form-label">Birth Date</label>
+                    <input type="date" class="form-control" id="birthDateControl" formControlName="BirthDate" placeholder="Employee Name">
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="positionsControl" class="form-label">Position</label>
+                    <select class="form-select" aria-label="Default select example" id="positionsControl" formControlName="Position">
+                        @for (position of positions; track position) 
+                        {
+                            <option [value]="position.id">{{position.name}}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="departmentsControl" class="form-label">Department</label>
+                    <select class="form-select" aria-label="Default select example" id="departmentsControl" formControlName="Department">
+                        @for (dep of departments; track dep) 
+                        {
+                            <option [value]="dep.id">{{dep.name}}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="managersControl" class="form-label">Manager</label>
+                    <select class="form-select" aria-label="Default select example" id="managersControl" formControlName="Manager">
+                        @for (manager of managers; track manager) 
+                        {
+                            <option [value]="manager.id">{{manager.name}}</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="isActiveControl" formControlName="IsActive">
+                    <label class="form-check-label" for="isActiveControl">Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" #closeButton>Close</button>
+        <button 
+            type="button" 
+            class="btn btn-primary" 
+            [disabled]="!employeeForm.valid" 
+            (click)="saveEmployee()"
+        >
+            Save changes
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

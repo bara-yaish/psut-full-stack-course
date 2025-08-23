@@ -6,3 +6,7 @@
 .table-title {
     flex-grow: 1;
 }
+
+.align-end {
+    align-items: flex-end;
+}
