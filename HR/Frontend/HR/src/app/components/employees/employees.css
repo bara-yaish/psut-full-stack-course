@@ -10,3 +10,7 @@
 .align-end {
     align-items: flex-end;
 }
+
+.invalid-input {
+    border-color: #d10000;
+}

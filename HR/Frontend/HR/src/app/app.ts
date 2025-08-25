@@ -3,30 +3,29 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ReversePipe } from './pipes/reverse-pipe';
 import { Employees } from './components/employees/employees';
+import { Departments } from './components/departments/departments';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   imports: [
-    // RouterOutlet, 
     // NgIf, 
     // NgFor, 
     // NgClass, 
     // NgStyle, 
     // RandomColor, 
+    RouterOutlet,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
     ReversePipe,
-    Employees
+    Employees,
+    Departments,
 ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
-  
-
-
-}
+export class App {}
 
 function testingStuff() {
   let title = "Welcome to Angular from Typescript";

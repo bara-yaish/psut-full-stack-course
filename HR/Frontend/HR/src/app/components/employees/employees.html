@@ -66,7 +66,7 @@
                     class="btn btn-outline-secondary"
                     data-bs-toggle="modal"
                     data-bs-target="#saveEmployeeModal"
-                    (click)="clearEmployeeForm()"
+                    (click)="clearEmployeeForm()"ZZ
                 >
                     <i class="bi bi-person-plus-fill"></i> 
                     <span>Add</span>
@@ -85,7 +85,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (employee of employees; track employee; let i = $index) 
+                    @for (employee of employees | paginate: paginationConfig; track employee; let i = $index) 
                     {
                         <tr>
                             <td>{{i + 1}}</td>
@@ -105,14 +105,20 @@
                             <td>{{employee.departmentName}}</td>
                             <td>{{employee.managerName}}</td>
                             <td>
-                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#saveEmployeeModal" (click)="editEmployee(employee.id)">
+                                <button (click)="editEmployee(employee.id)" type="button" class="btn btn-outline-success ms-2 me-2" data-bs-toggle="modal" data-bs-target="#saveEmployeeModal">
                                     <i class="bi bi-pencil-fill"></i>
+                                </button>
+
+                                <button (click)="removeEmployee(employee.id)" type="button" class="btn btn-outline-danger mx-2">
+                                    <i class="bi bi-trash-fill"></i>
                                 </button>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
+
+            <pagination-controls class="text-end" (pageChange)="changePage($event)"></pagination-controls>
         </div>
     </div>
 </div>
@@ -121,7 +127,9 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Save Employee</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">
+            Save Employee
+        </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -129,27 +137,74 @@
             <div class="row align-end">
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="nameControl" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="nameControl" formControlName="Name" placeholder="Name">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="nameControl" 
+                        formControlName="Name" 
+                        placeholder="Name"
+                        [class.invalid-input]="
+                            employeeForm.get('Name')?.invalid &&
+                            employeeForm.get('Name')?.touched
+                        "
+                    >
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="phoneControl" class="form-label">Phone</label>
-                    <input type="text" class="form-control" id="phoneControl" formControlName="Phone" placeholder="Phone">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="phoneControl" 
+                        formControlName="Phone" 
+                        placeholder="Phone"
+                        [class.invalid-input]="
+                            employeeForm.get('Phone')?.invalid &&
+                            employeeForm.get('Phone')?.touched
+                        "
+                    >
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="startDateControl" class="form-label">Start Date</label>
-                    <input type="date" class="form-control" id="startDateControl" formControlName="StartDate" placeholder="Employee Name">
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="startDateControl" 
+                        formControlName="StartDate" 
+                        placeholder="Employee Name"
+                        [class.invalid-input]="
+                            employeeForm.get('StartDate')?.invalid &&
+                            employeeForm.get('StartDate')?.touched
+                        "
+                    >
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="birthDateControl" class="form-label">Birth Date</label>
-                    <input type="date" class="form-control" id="birthDateControl" formControlName="BirthDate" placeholder="Employee Name">
+                    <input 
+                        type="date" 
+                        class="form-control" 
+                        id="birthDateControl" formControlName="BirthDate" placeholder="Employee Name"
+                        [class.invalid-input]="
+                            employeeForm.get('BirthDate')?.invalid &&
+                            employeeForm.get('BirthDate')?.touched
+                        "    
+                    >
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="positionsControl" class="form-label">Position</label>
-                    <select class="form-select" aria-label="Default select example" id="positionsControl" formControlName="Position">
+                    <select 
+                        class="form-select" 
+                        aria-label="Default select example" 
+                        id="positionsControl" 
+                        formControlName="Position"
+                        [class.invalid-input]="
+                            employeeForm.get('Position')?.invalid &&
+                            employeeForm.get('Position')?.touched
+                        "
+                    >
                         @for (position of positions; track position) 
                         {
                             <option [value]="position.id">{{position.name}}</option>
@@ -159,7 +214,16 @@
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="departmentsControl" class="form-label">Department</label>
-                    <select class="form-select" aria-label="Default select example" id="departmentsControl" formControlName="Department">
+                    <select 
+                        class="form-select" 
+                        aria-label="Default select example" 
+                        id="departmentsControl" 
+                        formControlName="Department"
+                        [class.invalid-input]="
+                            employeeForm.get('Department')?.invalid &&
+                            employeeForm.get('Department')?.touched
+                        "
+                    >
                         @for (dep of departments; track dep) 
                         {
                             <option [value]="dep.id">{{dep.name}}</option>
@@ -169,7 +233,12 @@
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <label for="managersControl" class="form-label">Manager</label>
-                    <select class="form-select" aria-label="Default select example" id="managersControl" formControlName="Manager">
+                    <select 
+                        class="form-select" 
+                        aria-label="Default select example" 
+                        id="managersControl" 
+                        formControlName="Manager"
+                    >
                         @for (manager of managers; track manager) 
                         {
                             <option [value]="manager.id">{{manager.name}}</option>
@@ -179,7 +248,13 @@
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="isActiveControl" formControlName="IsActive">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            role="switch" 
+                            id="isActiveControl" 
+                            formControlName="IsActive"
+                        >
                     <label class="form-check-label" for="isActiveControl">Is Active</label>
                     </div>
                 </div>

@@ -1,16 +1,21 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-employees',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule],
+  providers: [DatePipe],
   templateUrl: './employees.html',
   styleUrl: './employees.css'
 })
 export class Employees {
 
+  constructor (private _datePipe: DatePipe) {}
+
   @ViewChild ('closeButton') closeButton: ElementRef | undefined;
+  paginationConfig = { itemsPerPage: 5, currentPage: 1 };
 
   employees : Employee[] = [
      { id: 1, name: "Emp1", isActive: true, startDate: new Date(2025, 11, 21), phone: "+96255895155", positionId: 1, positionName: "Manager", birthDate: new Date(1995,5,1), departmentId: 1, departmentName: "HR", managerId: null, managerName : null },
@@ -22,6 +27,12 @@ export class Employees {
     { id: 4, name: "Emp4", isActive: true, startDate: new Date(2025, 1, 11), phone: "+964534534534", positionId: 2, positionName: "Developer", birthDate: new Date(2001,5,1), departmentId: 2, departmentName: "IT", managerId: 2, managerName : "Emp2" },
 
     { id: 5, name: "Emp5", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
+
+    { id: 6, name: "Emp6", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
+
+    { id: 7, name: "Emp7", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
+
+    { id: 8, name: "Emp8", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
   ]
 
   employeesTableColumns: string[] = [
@@ -128,19 +139,30 @@ export class Employees {
   editEmployee(id: number) {
     let employee = this.employees.find(x => x.id === id);
 
-    if (id != null) {
+    if (employee != null) {
       this.employeeForm.patchValue({
         Id: employee?.id,
         Name: employee?.name,
         Phone: employee?.phone,
-        StartDate: employee?.startDate,
-        BirthDate: employee?.birthDate,
+        StartDate: this._datePipe.transform(employee?.startDate, 'yyyy-MM-dd'),
+        BirthDate: this._datePipe.transform(employee?.birthDate, 'yyyy-MM-dd'),
         Position: employee?.positionId,
         Department: employee?.departmentId,
         Manager: employee?.managerId,
         IsActive: employee?.isActive,
       })
     }
+  }
+
+  removeEmployee(id: number) {
+    this.employees = this.employees.filter(x => x.id !== id);
+
+    // let index = this.employees.findIndex(x => x.id === id);
+    // this.employees.splice(index, 1);
+  }
+
+  changePage(pageNumber: number) {
+    this.paginationConfig.currentPage = pageNumber;
   }
 }
 
