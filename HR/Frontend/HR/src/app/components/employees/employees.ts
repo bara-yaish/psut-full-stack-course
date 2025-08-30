@@ -1,7 +1,10 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { EmployeesService } from '../../services/employees.service';
+import { List } from '../../interfaces/list-interface';
+import { Employee } from '../../interfaces/employee-interface';
 
 @Component({
   selector: 'app-employees',
@@ -10,30 +13,24 @@ import { NgxPaginationModule } from 'ngx-pagination';
   templateUrl: './employees.html',
   styleUrl: './employees.css'
 })
-export class Employees {
+export class Employees implements OnInit, OnDestroy {
 
-  constructor (private _datePipe: DatePipe) {}
+  constructor(private _datePipe: DatePipe, private _employeesService: EmployeesService) { }
 
-  @ViewChild ('closeButton') closeButton: ElementRef | undefined;
+  ngOnInit(): void {
+    this.loadEmployees();
+    this.loadManagers();
+  }
+
+  ngOnDestroy(): void {
+    console.log("Component Destroyed");
+  }
+
+  @ViewChild('closeButton') closeButton: ElementRef | undefined;
+
   paginationConfig = { itemsPerPage: 5, currentPage: 1 };
 
-  employees : Employee[] = [
-     { id: 1, name: "Emp1", isActive: true, startDate: new Date(2025, 11, 21), phone: "+96255895155", positionId: 1, positionName: "Manager", birthDate: new Date(1995,5,1), departmentId: 1, departmentName: "HR", managerId: null, managerName : null },
-
-    { id: 2, name: "Emp2", isActive: true, startDate: new Date(2025, 6, 21), phone: "+962546645668", positionId: 1, positionName: "Manager", birthDate: new Date(1994,5,1), departmentId: 2, departmentName: "IT", managerId: null, managerName : null },
-
-    { id: 3, name: "Emp3", isActive: false, startDate: new Date(2025, 5, 21), phone: "+962771235452", positionId: 2, positionName: "Developer", birthDate: new Date(2000,5,1), departmentId: 2, departmentName: "IT", managerId: 2, managerName : "Emp2" },
-
-    { id: 4, name: "Emp4", isActive: true, startDate: new Date(2025, 1, 11), phone: "+964534534534", positionId: 2, positionName: "Developer", birthDate: new Date(2001,5,1), departmentId: 2, departmentName: "IT", managerId: 2, managerName : "Emp2" },
-
-    { id: 5, name: "Emp5", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
-
-    { id: 6, name: "Emp6", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
-
-    { id: 7, name: "Emp7", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
-
-    { id: 8, name: "Emp8", isActive: false, startDate: new Date(2025, 2, 25), phone: "+962224455259", positionId: 3, positionName: "HR", birthDate: new Date(1999,5,1), departmentId: 1, departmentName: "HR", managerId: 1, managerName : "Emp1" },
-  ]
+  employees: Employee[] = [];
 
   employeesTableColumns: string[] = [
     "#",
@@ -60,11 +57,7 @@ export class Employees {
     { id: 3, name: "HR" },
   ];
 
-  managers = [
-    { id: null, name: "Select Manager" },
-    { id: 1, name: "Emp1" },
-    { id: 2, name: "Emp2" },
-  ]
+  managers: List[] = [];
 
   employeeForm: FormGroup = new FormGroup({
     Id: new FormControl(null),
@@ -95,10 +88,10 @@ export class Employees {
         departmentName: this.departments.find(x => x.id == this.employeeForm.value.Department)?.name,
 
         managerId: this.employeeForm.value.Manager,
-        managerName: this.employeeForm.value.Manager ? 
-          this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name : 
+        managerName: this.employeeForm.value.Manager ?
+          this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name :
           null,
-        
+
         isActive: this.employeeForm.value.IsActive
       };
 
@@ -119,9 +112,9 @@ export class Employees {
       this.employees[index].departmentName = this.departments.find(x => x.id == this.employeeForm.value.Department)?.name;
 
       this.employees[index].managerId = this.employeeForm.value.Manager;
-      this.employees[index].managerName = this.employeeForm.value.Manager ? 
-          this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name : 
-          null;
+      this.employees[index].managerName = this.employeeForm.value.Manager ?
+        this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name :
+        null;
 
       this.employees[index].isActive = this.employeeForm.value.IsActive;
     }
@@ -164,19 +157,59 @@ export class Employees {
   changePage(pageNumber: number) {
     this.paginationConfig.currentPage = pageNumber;
   }
-}
 
-export interface Employee {
-  id: number;
-  name: string;
-  positionId?: number;
-  positionName?: string;
-  birthDate?: Date;
-  isActive: boolean;
-  startDate: Date;
-  phone?: string;
-  managerId?: any | null;
-  managerName?: string | null;
-  departmentId?: number;
-  departmentName?: string;
+  loadEmployees() {
+    this.employees = [];
+
+    this._employeesService.getAll().subscribe({
+      next: (res: any) => {
+        if (res?.length > 0) {
+          res.forEach((x: any) => {
+            let employee: Employee = {
+              id: x.id,
+              name: x.name,
+              phone: x.phone,
+              birthDate: x.birthDate,
+              isActive: x.isActive,
+              startDate: x.startDate,
+              positionId: x.positionId,
+              positionName: x.positionName,
+              departmentId: x.departmentId,
+              departmentName: x.departmentName,
+              managerId: x.managerId,
+              managerName: x.managerName
+            };
+            this.employees.push(employee);
+          });
+        }
+        // console.log(res);
+      },
+      error: err => {
+        console.log(err.message)
+      }
+    })
+  }
+
+  loadManagers(employeeId?: number) {
+    this.managers = [
+      { id: null, name: "Select Manager" },
+    ];
+
+    this._employeesService.getManagers(employeeId).subscribe({
+      next: (res: any) => {
+        if (res?.length > 0) {
+          res.forEach((x: any) => {
+            let manager: List = {
+              id: x.id,
+              name: x.name
+            };
+            this.managers.push(manager);
+          });
+        }
+      },
+      error: err => {
+        console.log(err.message);
+      }
+    })
+  }
 }
