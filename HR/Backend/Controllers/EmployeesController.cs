@@ -1,4 +1,6 @@
 ﻿using HR.DTOs.Employees;
+using HR.DTOs.Shared;
+using HR.Enums;
 using HR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +10,7 @@ using System;
 namespace HR.Controllers
 {
     // Data Annotation - Extra information given to a class, method or property
-    [Authorize] // To enable Jwt Authentication and Authorization we implemented
+    //[Authorize] // To enable Jwt Authentication and Authorization we implemented
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeesController : ControllerBase
@@ -28,7 +30,7 @@ namespace HR.Controllers
         // Dependency Injection
         public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
 
-        [Authorize(Roles = "HR, Admin")]
+        //[Authorize(Roles = "HR, Admin")]
         [HttpGet("GetAll")]
         public IActionResult GetAll([FromQuery] FilterEmployeeDto filters)
         {
@@ -92,6 +94,7 @@ namespace HR.Controllers
 
             return Ok(employee);
         }
+
         [HttpGet("VacationsCount")]
         public IActionResult GetVacationCount()
         {
@@ -134,6 +137,24 @@ namespace HR.Controllers
                         VacationsCount = vacation.Count()                   // COUNT(Vacations.Id)
                     })
                 .ToList());
+        }
+
+        [HttpGet("Managers")]
+        public IActionResult GetManagers([FromQuery] long? employeeId)
+        {
+            return Ok(_dbContext.Employees
+                .AsNoTracking()
+                .Include(x => x.Lookup)
+                .Where(x => 
+                    x.IsActive && 
+                    x.Id != employeeId &&
+                    x.Lookup.MajorCode == (int)LookupMajorCodes.EmployeePositions && 
+                    x.Lookup.MinorCode == (int)PositionsMinorCode.Manager)
+                .Select(x => new ListDto
+                {
+                    Id = x.Id,
+                    Name =x.Name,
+                }).ToList());
         }
 
         [HttpPost("Add")]
