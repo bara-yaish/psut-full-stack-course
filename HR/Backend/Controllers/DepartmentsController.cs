@@ -1,11 +1,13 @@
 ﻿using HR.DTOs.Departments;
+using HR.DTOs.Shared;
 using HR.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HR.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentsController : ControllerBase
@@ -58,6 +60,25 @@ namespace HR.Controllers
                 if (department == null) return NotFound($"Department with ID ({id}) does not exist");
 
                 return Ok(department);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetDepartmentsList")]
+        public IActionResult GetDepartmentsList()
+        {
+            try
+            {
+                return Ok(_dbContext.Departments
+                    .AsNoTracking()
+                    .Select(x => new ListDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name
+                    }));
             }
             catch (Exception ex)
             {
