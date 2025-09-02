@@ -5,6 +5,9 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { EmployeesService } from '../../services/employees.service';
 import { List } from '../../interfaces/list-interface';
 import { Employee } from '../../interfaces/employee-interface';
+import { DepartmentsService } from '../../services/departments.service';
+import { LookupsService } from '../../services/lookups.service';
+import { LookupsMajorCodes } from '../../enums/major-codes';
 
 @Component({
   selector: 'app-employees',
@@ -15,11 +18,14 @@ import { Employee } from '../../interfaces/employee-interface';
 })
 export class Employees implements OnInit, OnDestroy {
 
-  constructor(private _datePipe: DatePipe, private _employeesService: EmployeesService) { }
+  constructor(
+    private _datePipe: DatePipe,
+    private _employeesService: EmployeesService,
+    private _departmentsService: DepartmentsService,
+    private _lookupsService: LookupsService) { }
 
   ngOnInit(): void {
     this.loadEmployees();
-    this.loadManagers();
   }
 
   ngOnDestroy(): void {
@@ -44,18 +50,9 @@ export class Employees implements OnInit, OnDestroy {
     "Manager"
   ]
 
-  departments = [
-    { id: null, name: "Select Department" },
-    { id: 1, name: "HR" },
-    { id: 2, name: "IT" },
-  ];
+  departments: List[] = [];
 
-  positions = [
-    { id: null, name: "Select Position" },
-    { id: 1, name: "Manager" },
-    { id: 2, name: "Developer" },
-    { id: 3, name: "HR" },
-  ];
+  positions: List[] = [];
 
   managers: List[] = [];
 
@@ -210,6 +207,51 @@ export class Employees implements OnInit, OnDestroy {
       error: err => {
         console.log(err.message);
       }
-    })
+    });
+  }
+
+  loadDepartments() {
+    this.departments = [
+      { id: null, name: "Select Department" },
+    ];
+
+    this._departmentsService.getDepartments().subscribe({
+      next: (res: any) => {
+        if (res?.length > 0) {
+          this.departments = this.departments.concat(
+            res.map((x: any) => ({ id: x.id, name: x.name } as List))
+          );
+        }
+      },
+      error: err => {
+        console.log(err.message);
+      }
+    });
+  }
+
+  loadPositions() {
+    this.positions = [
+      { id: null, name: 'Select Position' },
+    ]
+
+    this._lookupsService.getBtMajorCode(LookupsMajorCodes.EmployeePositions).subscribe({
+      next: (res: any) => {
+        if (res?.length > 0) {
+          this.positions = this.positions.concat(
+            res.map((x: any) => ({ id: x.id, name: x.name } as List))
+          );
+        }
+      },
+      error: err => {
+        console.log(err.message);
+      }
+    });
+  }
+
+  loadSaveDialog() {
+    this.clearEmployeeForm();
+    this.loadManagers();
+    this.loadDepartments();
+    this.loadPositions();
   }
 }
