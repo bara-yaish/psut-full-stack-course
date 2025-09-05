@@ -4,7 +4,7 @@ import { FormsModule, FormGroup, FormControl, ReactiveFormsModule, Validators } 
 import { ReversePipe } from './pipes/reverse-pipe';
 import { Employees } from './components/employees/employees';
 import { Departments } from './components/departments/departments';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive  } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +15,8 @@ import { RouterOutlet } from '@angular/router';
     // NgStyle, 
     // RandomColor, 
     RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
     FormsModule,
     ReactiveFormsModule,
     CommonModule,

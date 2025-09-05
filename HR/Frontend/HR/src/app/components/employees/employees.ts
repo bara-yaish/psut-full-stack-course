@@ -8,10 +8,16 @@ import { Employee } from '../../interfaces/employee-interface';
 import { DepartmentsService } from '../../services/departments.service';
 import { LookupsService } from '../../services/lookups.service';
 import { LookupsMajorCodes } from '../../enums/major-codes';
+import { ConfirmationDialog } from '../../shared-components/confirmation-dialog/confirmation-dialog';
 
 @Component({
   selector: 'app-employees',
-  imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule],
+  imports: [
+    CommonModule, 
+    ReactiveFormsModule, 
+    NgxPaginationModule,
+    ConfirmationDialog
+  ],
   providers: [DatePipe],
   templateUrl: './employees.html',
   styleUrl: './employees.css'
@@ -36,7 +42,15 @@ export class Employees implements OnInit, OnDestroy {
 
   paginationConfig = { itemsPerPage: 5, currentPage: 1 };
 
+  deleteDialogTitle: string = "Delete Confirmation";
+  deleteDialogBody: string = "Are you sure you want to delete this employee?"; 
+  displayConfirmationDialog: boolean = false;
+  employeeIdToBeDeleted: number | null = null;
+  
   employees: Employee[] = [];
+  departments: List[] = [];
+  positions: List[] = [];
+  managers: List[] = [];
 
   employeesTableColumns: string[] = [
     "#",
@@ -49,12 +63,6 @@ export class Employees implements OnInit, OnDestroy {
     "Department",
     "Manager"
   ]
-
-  departments: List[] = [];
-
-  positions: List[] = [];
-
-  managers: List[] = [];
 
   employeeForm: FormGroup = new FormGroup({
     Id: new FormControl(null),
@@ -144,8 +152,8 @@ export class Employees implements OnInit, OnDestroy {
     }
   }
 
-  removeEmployee(id: number) {
-    this.employees = this.employees.filter(x => x.id !== id);
+  removeEmployee() {
+    this.employees = this.employees.filter(x => x.id !== this.employeeIdToBeDeleted);
 
     // let index = this.employees.findIndex(x => x.id === id);
     // this.employees.splice(index, 1);
@@ -253,5 +261,17 @@ export class Employees implements OnInit, OnDestroy {
     this.loadManagers();
     this.loadDepartments();
     this.loadPositions();
+  }
+
+  showConfirmDialog(id: number) {
+    this.employeeIdToBeDeleted = id;
+    this.displayConfirmationDialog = true;
+  }
+
+  confirmEmployeeDelete(confirmDelete: boolean) {
+    if (confirmDelete) this.removeEmployee();
+
+    this.employeeIdToBeDeleted = null;
+    this.displayConfirmationDialog = false;
   }
 }
