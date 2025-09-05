@@ -44,7 +44,7 @@ namespace HR.Controllers
                                 (filters.PositionId == null || employee.PositionId == filters.PositionId) &&
                                 (filters.IsActive == null || employee.IsActive == filters.IsActive)
                             orderby
-                                employee.Id
+                                employee.Id descending
                             select
                                 new EmployeeDto
                                 {
@@ -171,6 +171,7 @@ namespace HR.Controllers
             _dbContext.Employees.Add(new ()
             {
                 Name = newEmployee.Name,
+                Phone = newEmployee.Phone,
                 BirthDate = newEmployee.BirthDate,
                 PositionId = newEmployee.PositionId,
                 IsActive = newEmployee.IsActive,
@@ -197,6 +198,7 @@ namespace HR.Controllers
             }
 
             targetEmployee.Name = updateEmployee.Name;
+            targetEmployee.Phone = updateEmployee.Phone;
             targetEmployee.BirthDate = updateEmployee.BirthDate;
             targetEmployee.PositionId = updateEmployee.PositionId;
             targetEmployee.IsActive = updateEmployee.IsActive;
@@ -214,18 +216,29 @@ namespace HR.Controllers
         [HttpDelete("Delete")]
         public IActionResult Delete([FromQuery] long id)
         {
-            var targetEmployee = _dbContext.Employees
-                .FirstOrDefault(employee => employee.Id == id);
-
-            if (targetEmployee is null)
+            try
             {
-                return BadRequest($"Employee {id} Not Found");
+                var targetEmployee = _dbContext.Employees
+                        .FirstOrDefault(employee => employee.Id == id);
+
+                if (targetEmployee is null)
+                    return BadRequest($"Employee {id} Not Found");
+
+                var employeeAssociate = _dbContext.Employees
+                    .FirstOrDefault(x => x.ManagerId == id);
+
+                if (employeeAssociate != null) 
+                    return BadRequest("Managers with assigned employees cannot be deleted.");
+
+                _dbContext.Employees.Remove(targetEmployee);
+                _dbContext.SaveChanges();
+
+                return Ok();
             }
-
-            _dbContext.Employees.Remove(targetEmployee);
-            _dbContext.SaveChanges();
-
-            return Ok();
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
         }
     }
 }
