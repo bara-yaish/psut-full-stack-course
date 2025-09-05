@@ -14,3 +14,9 @@
 .invalid-input {
     border-color: #d10000;
 }
+
+.employee-image {
+    width: 4rem;
+    height: 3rem;
+    border-radius: 2rem;
+}

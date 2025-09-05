@@ -11,4 +11,5 @@ export interface Employee {
   managerName?: string | null;
   departmentId?: number;
   departmentName?: string;
+  image?: any;
 }

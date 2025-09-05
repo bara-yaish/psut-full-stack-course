@@ -1,4 +1,4 @@
 export interface List {
-    id: number | null,
+    id: number | boolean | null,
     name: string
 }

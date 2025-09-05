@@ -7,41 +7,54 @@
             </h5>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <label for="employeeName" class="form-label">
-                        Employee Name
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="employeeName"
-                        placeholder="Name" 
-                    />
-                </div>
-                
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <label for="employeePosition" class="form-label">
-                        Employee Position
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="employeePosition"
-                        placeholder="Position"
-                    />
-                </div>
-                
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <label for="employeeStatus" class="form-label">
-                        Employee Status
-                    </label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="employeeStatus"
-                        placeholder="Status"
-                    />
+            <div [formGroup]="searchFilterForm">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <label for="employeeName" class="form-label">
+                            Employee Name
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="employeeName"
+                            placeholder="Name" 
+                            formControlName="Name"
+                        />
+                    </div>
+    
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <label for="employeePosition" class="form-label">
+                            Employee Position
+                        </label>
+                        <select 
+                            class="form-select" 
+                            aria-label="Default select example" 
+                            id="employeePosition" 
+                            formControlName="Position"
+                        >
+                            @for (position of positions; track position) 
+                            {
+                                <option [ngValue]="position.id">{{position.name}}</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="col-lg-4 col-md-4 col-sm-12">
+                        <label for="employeeStatus" class="form-label">
+                            Employee Status
+                        </label>
+                        <select 
+                            class="form-select" 
+                            aria-label="Default select example" 
+                            id="employeeStatus" 
+                            formControlName="Status"
+                        >
+                            @for (status of employeeStatusList; track status) 
+                            {
+                                <option [ngValue]="status.id">{{status.name}}</option>
+                            }
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -89,6 +102,9 @@
                     {
                         <tr>
                             <td>{{i + 1}}</td>
+                            <td>
+                                <img class="employee-image" src="https://www.davd.photo/wp-content/uploads/2019/03/rocco-roxie-employee-headshots-4.jpg" alt="Employee Image">
+                            </td>
                             <td>{{employee.name}}</td>
                             <td>{{employee.phone}}</td>
                             <td>{{employee.birthDate | date:'dd/MM/yyyy'}}</td>
@@ -207,7 +223,7 @@
                     >
                         @for (position of positions; track position) 
                         {
-                            <option [value]="position.id">{{position.name}}</option>
+                            <option [ngValue]="position.id">{{position.name}}</option>
                         }
                     </select>
                 </div>
@@ -226,7 +242,7 @@
                     >
                         @for (dep of departments; track dep) 
                         {
-                            <option [value]="dep.id">{{dep.name}}</option>
+                            <option [ngValue]="dep.id">{{dep.name}}</option>
                         }
                     </select>
                 </div>
@@ -241,9 +257,14 @@
                     >
                         @for (manager of managers; track manager) 
                         {
-                            <option [value]="manager.id">{{manager.name}}</option>
+                            <option [ngValue]="manager.id">{{manager.name}}</option>
                         }
                     </select>
+                </div>
+
+                <div class="col-lg-4 col-md-4 col-sm-12 mb-2">
+                    <label for="empImage" class="form-label">Image</label>
+                    <input class="form-control form-control-sm" (change)="uploadImage($event)" id="empImage" type="file" accept="image/*">
                 </div>
 
                 <div class="col-lg-4 col-md-4 col-sm-12 mb-2">

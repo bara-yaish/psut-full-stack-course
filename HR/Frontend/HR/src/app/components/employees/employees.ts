@@ -32,6 +32,7 @@ export class Employees implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadEmployees();
+    this.loadPositions();
   }
 
   ngOnDestroy(): void {
@@ -51,9 +52,15 @@ export class Employees implements OnInit, OnDestroy {
   departments: List[] = [];
   positions: List[] = [];
   managers: List[] = [];
+  employeeStatusList: List[] = [
+    { id: null, name: "Select Status" },
+    { id: true, name: "Active" },
+    { id: false, name: "Inactive" },
+  ];
 
   employeesTableColumns: string[] = [
     "#",
+    "Image",
     "Name",
     "Phone",
     "Birth Date",
@@ -62,7 +69,7 @@ export class Employees implements OnInit, OnDestroy {
     "Position",
     "Department",
     "Manager"
-  ]
+  ];
 
   employeeForm: FormGroup = new FormGroup({
     Id: new FormControl(null),
@@ -73,55 +80,61 @@ export class Employees implements OnInit, OnDestroy {
     Position: new FormControl(null, [Validators.required]),
     Department: new FormControl(null, [Validators.required]),
     Manager: new FormControl(null),
+    Image: new FormControl(null),
     IsActive: new FormControl(true, [Validators.required]),
-  })
+  });
+
+  searchFilterForm: FormGroup = new FormGroup({
+    Name: new FormControl(null),
+    Position: new FormControl(null),
+    Status: new FormControl(null),
+  });
+
+  uploadImage(event: any) {
+    this.employeeForm.patchValue({
+      Image: event.target.files[0]   
+    });
+
+
+  }
 
   saveEmployee() {
 
-    if (!this.employeeForm.value.Id) {
-      let newEmployee: Employee = {
-        id: this.employees[this.employees.length - 1].id + 1,
+    let employeeId = this.employeeForm.value.Id ?? 0;
+    let newEmployee: Employee = {
+        id: employeeId,
         name: this.employeeForm.value.Name,
         phone: this.employeeForm.value.Phone,
         startDate: this.employeeForm.value.StartDate,
         birthDate: this.employeeForm.value.BirthDate,
-
         positionId: this.employeeForm.value.Position,
-        positionName: this.positions.find(x => x.id == this.employeeForm.value.Position)?.name,
-
         departmentId: this.employeeForm.value.Department,
-        departmentName: this.departments.find(x => x.id == this.employeeForm.value.Department)?.name,
-
         managerId: this.employeeForm.value.Manager,
-        managerName: this.employeeForm.value.Manager ?
-          this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name :
-          null,
-
+        image: this.employeeForm.value.Image,
         isActive: this.employeeForm.value.IsActive
       };
 
-      this.employees.push(newEmployee);
+    if (!this.employeeForm.value.Id) {
+
+      this._employeesService.add(newEmployee).subscribe({
+        next: res => {
+          this.loadEmployees();
+        },
+        error: err => {
+          alert(err.error);
+        }
+      });
     }
     else {
-      let index = this.employees.findIndex(x => x.id == this.employeeForm.value.Id);
-
-      this.employees[index].name = this.employeeForm.value.Name;
-      this.employees[index].phone = this.employeeForm.value.Phone;
-      this.employees[index].startDate = this.employeeForm.value.StartDate;
-      this.employees[index].birthDate = this.employeeForm.value.BirthDate;
-
-      this.employees[index].positionId = this.employeeForm.value.Position;
-      this.employees[index].positionName = this.positions.find(x => x.id == this.employeeForm.value.Position)?.name;
-
-      this.employees[index].departmentId = this.employeeForm.value.Department;
-      this.employees[index].departmentName = this.departments.find(x => x.id == this.employeeForm.value.Department)?.name;
-
-      this.employees[index].managerId = this.employeeForm.value.Manager;
-      this.employees[index].managerName = this.employeeForm.value.Manager ?
-        this.managers.find(x => x.id == this.employeeForm.value.Manager)?.name :
-        null;
-
-      this.employees[index].isActive = this.employeeForm.value.IsActive;
+      
+      this._employeesService.update(newEmployee).subscribe({
+        next: res => {
+          this.loadEmployees();
+        },
+        error: err => {
+          alert(err.error);
+        }
+      });
     }
 
     this.closeButton?.nativeElement.click();
@@ -135,6 +148,7 @@ export class Employees implements OnInit, OnDestroy {
   }
 
   editEmployee(id: number) {
+    this.loadSaveDialog(id);
     let employee = this.employees.find(x => x.id === id);
 
     if (employee != null) {
@@ -153,7 +167,16 @@ export class Employees implements OnInit, OnDestroy {
   }
 
   removeEmployee() {
-    this.employees = this.employees.filter(x => x.id !== this.employeeIdToBeDeleted);
+    if (!this.employeeIdToBeDeleted) return;
+
+    return this._employeesService.delete(this.employeeIdToBeDeleted).subscribe({
+      next: res => {
+        this.loadEmployees();
+      },
+      error: err => {
+        alert(err.error);
+      }
+    })
 
     // let index = this.employees.findIndex(x => x.id === id);
     // this.employees.splice(index, 1);
@@ -166,7 +189,13 @@ export class Employees implements OnInit, OnDestroy {
   loadEmployees() {
     this.employees = [];
 
-    this._employeesService.getAll().subscribe({
+    let searchObj = {
+      name: this.searchFilterForm.value.Name,
+      positionId: this.searchFilterForm.value.Position,
+      isActive: this.searchFilterForm.value.Status,
+    }
+
+    this._employeesService.getAll(searchObj).subscribe({
       next: (res: any) => {
         if (res?.length > 0) {
           res.forEach((x: any) => {
@@ -190,7 +219,7 @@ export class Employees implements OnInit, OnDestroy {
         // console.log(res);
       },
       error: err => {
-        console.log(err.message)
+        alert(err.error)
       }
     })
   }
@@ -213,7 +242,7 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        console.log(err.message);
+        alert(err.error);
       }
     });
   }
@@ -232,7 +261,7 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        console.log(err.message);
+        alert(err.error);
       }
     });
   }
@@ -251,14 +280,15 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        console.log(err.message);
+        alert
+        (err.error);
       }
     });
   }
 
-  loadSaveDialog() {
+  loadSaveDialog(employeeId?: number) {
     this.clearEmployeeForm();
-    this.loadManagers();
+    this.loadManagers(employeeId);
     this.loadDepartments();
     this.loadPositions();
   }
