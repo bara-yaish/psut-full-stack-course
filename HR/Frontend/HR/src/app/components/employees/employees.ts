@@ -13,8 +13,8 @@ import { ConfirmationDialog } from '../../shared-components/confirmation-dialog/
 @Component({
   selector: 'app-employees',
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
+    CommonModule,
+    ReactiveFormsModule,
     NgxPaginationModule,
     ConfirmationDialog
   ],
@@ -40,14 +40,15 @@ export class Employees implements OnInit, OnDestroy {
   }
 
   @ViewChild('closeButton') closeButton: ElementRef | undefined;
+  @ViewChild('employeeImageInput') employeeImageInput!: ElementRef;
 
   paginationConfig = { itemsPerPage: 5, currentPage: 1 };
 
   deleteDialogTitle: string = "Delete Confirmation";
-  deleteDialogBody: string = "Are you sure you want to delete this employee?"; 
+  deleteDialogBody: string = "Are you sure you want to delete this employee?";
   displayConfirmationDialog: boolean = false;
   employeeIdToBeDeleted: number | null = null;
-  
+
   employees: Employee[] = [];
   departments: List[] = [];
   positions: List[] = [];
@@ -74,7 +75,7 @@ export class Employees implements OnInit, OnDestroy {
   employeeForm: FormGroup = new FormGroup({
     Id: new FormControl(null),
     Name: new FormControl(null, [Validators.required]),
-    Phone: new FormControl(null, [Validators.required]),
+    Phone: new FormControl(null),
     StartDate: new FormControl(null, [Validators.required]),
     BirthDate: new FormControl(null, [Validators.required]),
     Position: new FormControl(null, [Validators.required]),
@@ -82,6 +83,7 @@ export class Employees implements OnInit, OnDestroy {
     Manager: new FormControl(null),
     Image: new FormControl(null),
     IsActive: new FormControl(true, [Validators.required]),
+    HaveImage: new FormControl(false),
   });
 
   searchFilterForm: FormGroup = new FormGroup({
@@ -91,28 +93,28 @@ export class Employees implements OnInit, OnDestroy {
   });
 
   uploadImage(event: any) {
+
     this.employeeForm.patchValue({
-      Image: event.target.files[0]   
+      Image: event.target.files[0]
     });
-
-
   }
 
   saveEmployee() {
 
     let employeeId = this.employeeForm.value.Id ?? 0;
     let newEmployee: Employee = {
-        id: employeeId,
-        name: this.employeeForm.value.Name,
-        phone: this.employeeForm.value.Phone,
-        startDate: this.employeeForm.value.StartDate,
-        birthDate: this.employeeForm.value.BirthDate,
-        positionId: this.employeeForm.value.Position,
-        departmentId: this.employeeForm.value.Department,
-        managerId: this.employeeForm.value.Manager,
-        image: this.employeeForm.value.Image,
-        isActive: this.employeeForm.value.IsActive
-      };
+      id: employeeId,
+      name: this.employeeForm.value.Name,
+      phone: this.employeeForm.value.Phone,
+      startDate: this.employeeForm.value.StartDate,
+      birthDate: this.employeeForm.value.BirthDate,
+      positionId: this.employeeForm.value.Position,
+      departmentId: this.employeeForm.value.Department,
+      managerId: this.employeeForm.value.Manager,
+      image: this.employeeForm.value.Image,
+      isActive: this.employeeForm.value.IsActive,
+      haveImage: this.employeeForm.value.HasImage
+    };
 
     if (!this.employeeForm.value.Id) {
 
@@ -121,18 +123,18 @@ export class Employees implements OnInit, OnDestroy {
           this.loadEmployees();
         },
         error: err => {
-          alert(err.error);
+          console.log(err.error);
         }
       });
     }
     else {
-      
+
       this._employeesService.update(newEmployee).subscribe({
         next: res => {
           this.loadEmployees();
         },
         error: err => {
-          alert(err.error);
+          console.log(err.error);
         }
       });
     }
@@ -141,10 +143,18 @@ export class Employees implements OnInit, OnDestroy {
     this.clearEmployeeForm();
   }
 
+  clearInputImage() {
+    this.employeeImageInput.nativeElement.value = '';
+  }
+
   clearEmployeeForm() {
+
     this.employeeForm.reset({
-      IsActive: true
+      IsActive: true,
+      HasImage: false
     });
+
+    this.clearInputImage();
   }
 
   editEmployee(id: number) {
@@ -162,6 +172,7 @@ export class Employees implements OnInit, OnDestroy {
         Department: employee?.departmentId,
         Manager: employee?.managerId,
         IsActive: employee?.isActive,
+        HasImage: employee?.haveImage
       })
     }
   }
@@ -174,7 +185,7 @@ export class Employees implements OnInit, OnDestroy {
         this.loadEmployees();
       },
       error: err => {
-        alert(err.error);
+        console.log(err.error);
       }
     })
 
@@ -211,7 +222,9 @@ export class Employees implements OnInit, OnDestroy {
               departmentId: x.departmentId,
               departmentName: x.departmentName,
               managerId: x.managerId,
-              managerName: x.managerName
+              managerName: x.managerName,
+              imagePath: x.imagePath ? x.imagePath.replaceAll("\\", "/") : "assets/images/emp-default-image.avif",
+              haveImage: x.imagePath ? true : false,
             };
             this.employees.push(employee);
           });
@@ -219,7 +232,7 @@ export class Employees implements OnInit, OnDestroy {
         // console.log(res);
       },
       error: err => {
-        alert(err.error)
+        console.log(err.error)
       }
     })
   }
@@ -242,7 +255,7 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        alert(err.error);
+        console.log(err.error);
       }
     });
   }
@@ -261,7 +274,7 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        alert(err.error);
+        console.log(err.error);
       }
     });
   }
@@ -280,8 +293,8 @@ export class Employees implements OnInit, OnDestroy {
         }
       },
       error: err => {
-        alert
-        (err.error);
+        console.log
+          (err.error);
       }
     });
   }
@@ -303,5 +316,12 @@ export class Employees implements OnInit, OnDestroy {
 
     this.employeeIdToBeDeleted = null;
     this.displayConfirmationDialog = false;
+  }
+
+  removeImage() {
+
+    this.employeeForm.patchValue({
+      HasImage: false,
+    })
   }
 }

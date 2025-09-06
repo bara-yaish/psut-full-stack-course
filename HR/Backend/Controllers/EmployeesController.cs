@@ -26,9 +26,16 @@ namespace HR.Controllers
         // Can Use Multiple Parameters Of Type [FromQuery]
 
         private readonly HrDbContext _dbContext;
+        private readonly IConfiguration _config;
+        private IWebHostEnvironment _env;
 
         // Dependency Injection
-        public EmployeesController(HrDbContext dbContext) { _dbContext = dbContext; }
+        public EmployeesController(HrDbContext dbContext, IConfiguration config, IWebHostEnvironment env) 
+        { 
+            _dbContext = dbContext; 
+            _config = config;
+            _env = env;
+        }
 
         //[Authorize(Roles = "HR, Admin")]
         [HttpGet("GetAll")]
@@ -59,7 +66,8 @@ namespace HR.Controllers
                                     ManagerId = employee.ManagerId,
                                     ManagerName = manager.Name,
                                     DepartmentId = employee.DepartmentId,
-                                    DepartmentName = department.Name
+                                    DepartmentName = department.Name,
+                                    ImagePath = !string.IsNullOrEmpty(employee.ImagePath) ? Path.Combine(_config["BaseUrl"], employee.ImagePath) : string.Empty
                                 };
 
             return Ok(employees);
@@ -158,7 +166,7 @@ namespace HR.Controllers
         }
 
         [HttpPost("Add")]
-        public IActionResult Add([FromBody] SaveEmployeeDto newEmployee)
+        public IActionResult Add([FromForm] SaveEmployeeDto newEmployee)
         {
             var newUser = new User
             {
@@ -167,6 +175,12 @@ namespace HR.Controllers
                 IsAdmin = false
             };
             _dbContext.Add(newUser);
+
+            string? imagePath = null;
+            if (newEmployee.Image is not null)
+            {
+                imagePath = UploadImage(newEmployee.Image);
+            }
 
             _dbContext.Employees.Add(new ()
             {
@@ -179,15 +193,16 @@ namespace HR.Controllers
                 EndDate = newEmployee.EndDate,
                 DepartmentId = newEmployee.DepartmentId,
                 ManagerId = newEmployee.ManagerId,
+                ImagePath = imagePath,
                 User = newUser // EF will automatically reference the UserId in the new User record above
             });
-            _dbContext.SaveChanges(); // It won't save the added changes unless this method is called
 
+            _dbContext.SaveChanges(); // It won't save the added changes unless this method is called
             return Created();
         }
 
         [HttpPut("Update")]
-        public IActionResult Update([FromBody] SaveEmployeeDto updateEmployee)
+        public IActionResult Update([FromForm] SaveEmployeeDto updateEmployee)
         {
             var targetEmployee = _dbContext.Employees
                 .FirstOrDefault(employee => employee.Id == updateEmployee.Id);
@@ -206,6 +221,15 @@ namespace HR.Controllers
             targetEmployee.EndDate = updateEmployee.EndDate;
             targetEmployee.DepartmentId = updateEmployee.DepartmentId;
             targetEmployee.ManagerId = updateEmployee.ManagerId;
+
+            if (updateEmployee.Image is not null)
+            {
+                targetEmployee.ImagePath = UploadImage(updateEmployee.Image);
+            }
+            else if (updateEmployee.Image is null && updateEmployee.HaveImage is false)
+            {
+                targetEmployee.ImagePath = null;
+            }
 
             _dbContext.Employees.Update(targetEmployee);
             _dbContext.SaveChanges();
@@ -239,6 +263,25 @@ namespace HR.Controllers
             {
                 return BadRequest($"{ex.Message}");
             }
+        }
+
+        private string UploadImage(IFormFile image)
+        {
+            var wwwrootPath = _env.WebRootPath;
+            var attachmentsPath = Path.Combine("Attachments", "EmployeeImages");
+
+            var folderPath = Path.Combine(wwwrootPath, attachmentsPath);
+
+            Directory.CreateDirectory(folderPath); // Checks for directory and creates if it doesnt exist already
+
+            var fileExtension = Path.GetExtension(image.FileName);
+            var fileName = Guid.NewGuid() + fileExtension;
+            var filePath = Path.Combine(folderPath, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            image.CopyTo(stream);
+
+            return Path.Combine(attachmentsPath, fileName);
         }
     }
 }

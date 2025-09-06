@@ -12,4 +12,6 @@ export interface Employee {
   departmentId?: number;
   departmentName?: string;
   image?: any;
+  imagePath?: string;
+  haveImage?: boolean;
 }

@@ -15,6 +15,8 @@ namespace HR.Models
         public bool IsActive { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string? ImagePath { get; set; }
+
 
         // FOREIGN KEYS
         // It is like saying: DepartmentId FOREIGN KEY REFERENCES Departments(Id)
@@ -23,6 +25,7 @@ namespace HR.Models
         // reference even if the property name is not the same as the Id field in the Departments table.
         // Navigation properties can be used for JOIN statements
         // For Instance: employee.DepartmentRow.Name
+
         [ForeignKey("DepartmentRow")]
         public long? DepartmentId { get; set; } // The Foreign Key
         public Department? Department { get; set; } // Navigation Property: The Department Table Reference (name does not matter)

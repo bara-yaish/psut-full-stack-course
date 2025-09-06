@@ -8,6 +8,7 @@
         public DateTime? BirthDate { get; set; }
         public bool IsActive { get; set; }
         public DateTime StartDate { get; set; }
+        public string? ImagePath { get; set; }
         public long? ManagerId { get; set; }
         public string? ManagerName { get; set; }
         public long? DepartmentId { get; set; }

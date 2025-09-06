@@ -31,12 +31,39 @@ export class EmployeesService {
 
   add(employee: Employee) {
 
-    return this._http.post(`${this.employeesUrl}/Add`, employee);
+    let formData = new FormData();
+
+    formData.set("Id", employee.id.toString());
+    formData.set("Name", employee.name);
+    formData.set("Phone", employee.phone ?? "");
+    formData.set("BirthDate", employee.birthDate?.toString() ?? "");
+    formData.set("PositionId", employee.positionId?.toString() ?? "");
+    formData.set("IsActive", employee.isActive.toString() ?? "");
+    formData.set("StartDate", employee.startDate?.toString() ?? "");
+    formData.set("ManagerId", employee.managerId?.toString() ?? "");
+    formData.set("DepartmentId", employee.departmentId?.toString() ?? "");
+    formData.set("Image", employee.image);
+
+    return this._http.post(`${this.employeesUrl}/Add`, formData);
   }
 
   update(employee: Employee) {
 
-    return this._http.put(`${this.employeesUrl}/Update`, employee);
+    let formData = new FormData();
+
+    formData.set("Id", employee.id.toString());
+    formData.set("Name", employee.name);
+    formData.set("Phone", employee.phone ?? "");
+    formData.set("BirthDate", employee.birthDate?.toString() ?? "");
+    formData.set("PositionId", employee.positionId?.toString() ?? "");
+    formData.set("IsActive", employee.isActive.toString() ?? "");
+    formData.set("StartDate", employee.startDate?.toString() ?? "");
+    formData.set("ManagerId", employee.managerId?.toString() ?? "");
+    formData.set("DepartmentId", employee.departmentId?.toString() ?? "");
+    formData.set("Image", employee.image);
+    formData.set("HaveImage", employee.haveImage?.toString() ?? "")
+
+    return this._http.put(`${this.employeesUrl}/Update`, formData);
   }
 
   delete(id: number) {

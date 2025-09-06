@@ -364,3 +364,6 @@ FodyWeavers.xsd
 
 # Course Recordings
 Recordings/
+
+HR/Frontend/HR/src/assets/*
+HR/Backend/wwwroot/Attachments/EmployeeImages/*
